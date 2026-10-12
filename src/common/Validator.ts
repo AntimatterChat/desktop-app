@@ -198,7 +198,7 @@ const configDataSchemaV4 = Joi.object<ConfigV4>({
     logLevel: Joi.string().default('info'),
     appLanguage: Joi.string().allow(''),
     enableMetrics: Joi.boolean().default(true),
-    enableSentry: Joi.boolean().default(true),
+    enableSentry: Joi.boolean().default(false),
     enableSessionAttributes: Joi.boolean().default(true),
     viewLimit: Joi.number().integer().min(1),
     themeSyncing: Joi.boolean().default(true),

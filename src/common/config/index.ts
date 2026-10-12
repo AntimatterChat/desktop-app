@@ -235,7 +235,7 @@ export class Config extends EventEmitter {
     }
 
     get enableSentry() {
-        return this.combinedData?.enableSentry ?? true;
+        return this.combinedData?.enableSentry ?? false;
     }
 
     get enableSessionAttributes() {

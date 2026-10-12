@@ -497,6 +497,12 @@ const definition: (intl: IntlShape) => Promise<SettingsDefinition> = async (intl
                 {
                     id: 'enableSentry',
                     component: CheckSetting,
+
+                    // Error reports go nowhere unless the build was given a Sentry DSN (MM_DESKTOP_BUILD_SENTRYDSN)
+                    // eslint-disable-next-line no-undef
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    condition: Boolean(__SENTRY_DSN__),
                     props: {
                         label: (
                             <FormattedMessage
