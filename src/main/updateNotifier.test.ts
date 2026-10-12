@@ -21,7 +21,7 @@ jest.mock('electron', () => ({
     app: {
         getAppPath: jest.fn(() => '/path/to/app'),
         getVersion: jest.fn(() => '5.0.0'),
-        name: 'Mattermost',
+        name: 'Antimatter',
     },
     ipcMain: {
         on: jest.fn(),
@@ -41,8 +41,9 @@ jest.mock('common/config', () => ({
 }));
 
 jest.mock('common/config/buildConfig', () => ({
+    __esModule: true,
     default: {
-        updateNotificationURL: 'https://releases.mattermost.com/desktop',
+        updateNotificationURL: 'https://github.com/AntimatterChat/desktop-app/releases',
     },
 }));
 
@@ -226,6 +227,24 @@ describe('main/updateNotifier', () => {
             const updateNotifier = new UpdateNotifier();
             const result = await updateNotifier.performUpdateCheck(false);
             expect(result).toEqual({version: '6.1.0-develop.2'});
+            expect(net.fetch).toHaveBeenCalledWith('https://github.com/AntimatterChat/desktop-app/releases/latest/download/latest.txt');
+        });
+
+        it('should return null when there is no release yet', async () => {
+            app.getVersion.mockReturnValue('5.0.0');
+            net.fetch.mockResolvedValue({ok: false, status: 404} as unknown as Response);
+            const updateNotifier = new UpdateNotifier();
+            expect(await updateNotifier.performUpdateCheck(false)).toBeNull();
+        });
+
+        it('should ignore an answer that is not a version', async () => {
+            app.getVersion.mockReturnValue('5.0.0');
+            net.fetch.mockResolvedValue({
+                ok: true,
+                text: jest.fn().mockResolvedValue('<html>Not Found</html>'),
+            } as unknown as Response);
+            const updateNotifier = new UpdateNotifier();
+            expect(await updateNotifier.performUpdateCheck(false)).toBeNull();
         });
     });
 });

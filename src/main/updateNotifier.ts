@@ -13,7 +13,6 @@ import {
     CHECK_FOR_UPDATES,
     UPDATE_SHORTCUT_MENU,
     NO_UPDATE_AVAILABLE,
-    OPEN_WINDOWS_STORE,
     DOWNLOAD_UPDATE_MANUALLY,
     OPEN_UPDATE_GUIDE,
     OPEN_LINUX_GITHUB_RELEASE,
@@ -44,7 +43,6 @@ export class UpdateNotifier {
 
     constructor() {
         ipcMain.on(CHECK_FOR_UPDATES, () => this.checkForUpdates(true));
-        ipcMain.on(OPEN_WINDOWS_STORE, this.openWindowsStore);
         ipcMain.on(DOWNLOAD_UPDATE_MANUALLY, this.downloadUpdateManually);
         ipcMain.on(OPEN_UPDATE_GUIDE, this.openUpdateGuide);
         ipcMain.on(OPEN_LINUX_GITHUB_RELEASE, this.openLinuxGitHubRelease);
@@ -132,14 +130,13 @@ export class UpdateNotifier {
 
         const currentVersion = app.getVersion();
         const baseURL = buildConfig.updateNotificationURL;
-
-        let filename = 'latest.txt';
-        const versionMatch = currentVersion.match(/^[0-9]+\.[0-9]+\.[0-9]+-([^.]+)/);
-        if (versionMatch) {
-            filename = `${versionMatch[1]}.txt`;
+        if (!baseURL) {
+            log.info('No update URL configured, skipping update check');
+            return null;
         }
 
-        const url = `${baseURL}/${filename}`;
+        // The latest (non pre-release) GitHub release carries a latest.txt asset holding its version
+        const url = `${baseURL}/latest/download/latest.txt`;
         log.info('Fetching update info from', {url});
 
         try {
@@ -158,6 +155,11 @@ export class UpdateNotifier {
 
             log.info('Remote version found', {remoteVersion, currentVersion});
 
+            if (!semver.valid(remoteVersion)) {
+                log.warn('Invalid version in the update info', {remoteVersion});
+                return null;
+            }
+
             if (semver.gt(remoteVersion, currentVersion)) {
                 log.info('New version available', {remoteVersion, currentVersion});
                 return {version: remoteVersion};
@@ -168,12 +170,6 @@ export class UpdateNotifier {
         } catch (error) {
             log.error('Request error during update check', {error, url});
             return null;
-        }
-    };
-
-    private openWindowsStore = (): void => {
-        if (process.platform === 'win32' && buildConfig.windowsStoreUpdateURL) {
-            shell.openExternal(buildConfig.windowsStoreUpdateURL);
         }
     };
 
@@ -196,10 +192,10 @@ export class UpdateNotifier {
 
         switch (platform) {
         case 'win32':
-            shell.openExternal(`${baseURL}/${version}/${this.getDownloadURL(version, 'win', 'msi', arch)}`);
+            shell.openExternal(`${baseURL}/download/v${version}/${this.getDownloadURL(version, 'win', 'msi', arch)}`);
             break;
         case 'darwin':
-            shell.openExternal(`${baseURL}/${version}/${this.getDownloadURL(version, 'mac', 'dmg', arch)}`);
+            shell.openExternal(`${baseURL}/download/v${version}/${this.getDownloadURL(version, 'mac', 'dmg', arch)}`);
             break;
         default:
             log.error('Unsupported platform for manual download', {platform});
@@ -232,7 +228,7 @@ export class UpdateNotifier {
     };
 
     private getDownloadURL = (version: string, platformName: string, fileExt: string, archName: string): string => {
-        return `mattermost-desktop-${version}-${platformName}-${archName}.${fileExt}`;
+        return `antimatter-desktop-${version}-${platformName}-${archName}.${fileExt}`;
     };
 
     private skipVersion = (): void => {

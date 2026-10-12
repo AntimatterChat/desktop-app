@@ -382,7 +382,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "Версія {appName} {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Доступна нова версія",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Відкрити Mac App Store",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Відкрити Windows Store",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Перезавантажити та оновити",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Пропустити цю версію",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Переглянути журнал змін",

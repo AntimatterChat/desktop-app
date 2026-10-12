@@ -32,11 +32,15 @@ const buildConfig: BuildConfig = {
     upgradeLink: DEFAULT_UPGRADE_LINK,
     enableServerManagement: true,
     enableUpdateNotifications: true,
-    updateNotificationURL: 'https://releases.mattermost.com/desktop',
-    macAppStoreUpdateURL: 'macappstore://apps.apple.com/us/app/mattermost-desktop/id1614666244',
-    windowsStoreUpdateURL: 'ms-windows-store://pdp/?productid=XP8BR8MH3LPKLT',
-    linuxUpdateURL: 'https://docs.mattermost.com/deployment-guide/desktop/linux-desktop-install.html',
-    linuxGitHubReleaseURL: 'https://github.com/mattermost/desktop/releases/tag',
+
+    // Updates are announced by a latest.txt asset (holding the version) on the latest GitHub release,
+    // and the installers are downloaded from the release of that version.
+    updateNotificationURL: 'https://github.com/AntimatterChat/desktop-app/releases',
+
+    // Antimatter isn't published on the Mac App Store: set this for a Mac App Store build of your own.
+    macAppStoreUpdateURL: '',
+    linuxUpdateURL: 'https://github.com/AntimatterChat/desktop-app#linux',
+    linuxGitHubReleaseURL: 'https://github.com/AntimatterChat/desktop-app/releases/tag',
     managedResources: ['trusted'],
     allowedProtocols: [
         'antimatter',

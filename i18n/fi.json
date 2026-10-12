@@ -372,7 +372,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} versio {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Uusi versio saatavilla",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Avaa Mac App Store",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Avaa Windows Store",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Käynnistä uudelleen ja päivitä",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Ohita tämä versio",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Näytä muutosloki",

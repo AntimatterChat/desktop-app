@@ -403,7 +403,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} 版本 {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "桌面应用有新版本可用",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "打开 Mac App Store",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "打开 Microsoft Store",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "重启并更新",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "跳过此版本",
   "renderer.downloadsDropdown.Update.ViewChangelog": "查看更新日志",

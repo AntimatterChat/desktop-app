@@ -406,7 +406,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} versie {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Nieuwe versie beschikbaar",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Mac App Store openen",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Windows Store openen",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Opnieuw opstarten en bijwerken",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Deze versie overslaan",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Overzicht wijzigingen bekijken",

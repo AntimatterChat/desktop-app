@@ -376,7 +376,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} version {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Ny desktopversion tilgængelig",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Åbn Mac App Store",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Åbn Windows Store",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Genstart og opdater",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Spring denne version over",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Se ændringslog",

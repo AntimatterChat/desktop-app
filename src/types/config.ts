@@ -137,7 +137,6 @@ export type BuildConfig = {
     enableUpdateNotifications: boolean;
     updateNotificationURL: string;
     macAppStoreUpdateURL: string;
-    windowsStoreUpdateURL?: string;
     linuxUpdateURL: string;
     linuxGitHubReleaseURL: string;
     managedResources: string[];

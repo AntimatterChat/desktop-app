@@ -38,11 +38,11 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 # echo an error message before exiting
 trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
-# mattermost repo might not be the origin one, we don't want to enforce that.
-org="github.com:mattermost|https://github.com/mattermost"
+# the AntimatterChat repo might not be the origin one, we don't want to enforce that.
+org="github.com:AntimatterChat|https://github.com/AntimatterChat"
 git_origin="$(git remote -v | grep -E ${org} | grep push | awk '{print $1}')"
 if [[ -z "${git_origin}" ]]; then
-    print_warning "Can't find a mattermost remote, defaulting to origin"
+    print_warning "Can't find an AntimatterChat remote, defaulting to origin"
     git_origin="origin"
 fi
 
@@ -188,9 +188,9 @@ case "${1}" in
         fi
     ;;
     *)
-        print_info "Mattermmost Desktop Release Helper"
+        print_info "Antimatter Desktop Release Helper"
         print_info "Usage: $0 <start|rc|pre-final|final|patch> [esr]\n"
-        print_info "This script will help you create a new release for the Mattermost Desktop App."
+        print_info "This script will help you create a new release for the Antimatter Desktop App."
         print_info "Must be run on a release branch (release-X.Y)\n"
         print_info "Commands:"
         print_info "  start: Start a new release using the current version"

@@ -80,7 +80,6 @@ export const RECEIVE_DROPDOWN_MENU_SIZE = 'receive-dropdown-menu-size';
 export const UPDATE_AVAILABLE = 'update-available';
 export const CHECK_FOR_UPDATES = 'check-for-updates';
 export const NO_UPDATE_AVAILABLE = 'no-update-available';
-export const OPEN_WINDOWS_STORE = 'open-windows-store';
 export const DOWNLOAD_UPDATE_MANUALLY = 'download-update-manually';
 export const OPEN_UPDATE_GUIDE = 'open-update-guide';
 export const OPEN_LINUX_GITHUB_RELEASE = 'open-linux-github-release';

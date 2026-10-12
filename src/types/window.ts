@@ -42,7 +42,6 @@ declare global {
             openServerExternally: () => void;
             openServerUpgradeLink: () => void;
             openChangelogLink: () => void;
-            openWindowsStore: () => void;
             downloadUpdateManually: () => void;
             openUpdateGuide: () => void;
             openLinuxGitHubRelease: () => void;

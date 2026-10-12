@@ -390,7 +390,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} versija {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Galima nauja versija",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Atidaryti Mac aplikacijų parduotuvę",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Atidaryti Windows Parduotuvę",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Paleiskite iš naujo ir atnaujinkite",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Praleisti šią versiją",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Peržiūrėti pakeitimų sąrašą",

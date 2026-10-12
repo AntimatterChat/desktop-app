@@ -393,7 +393,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName}-version {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Ny version tillgänglig",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Öppna Mac:ens app-butik",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Öppna Windows-butiken",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Starta om och uppdatera",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Hoppa över den här versionen",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Visa ändringslogg",

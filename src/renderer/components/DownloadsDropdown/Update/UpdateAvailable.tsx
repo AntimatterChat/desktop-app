@@ -31,7 +31,7 @@ const UpdateAvailable = ({item, appName, activeItem}: OwnProps) => {
         e?.preventDefault?.();
 
         if (platform === 'win32') {
-            window.desktop.openWindowsStore();
+            window.desktop.downloadUpdateManually();
         } else if (platform === 'darwin') {
             if (isMacAppStore) {
                 window.desktop.openMacAppStore();
@@ -54,14 +54,6 @@ const UpdateAvailable = ({item, appName, activeItem}: OwnProps) => {
     };
 
     const getMainButtonText = () => {
-        if (platform === 'win32') {
-            return (
-                <FormattedMessage
-                    id='renderer.downloadsDropdown.Update.OpenWindowsStore'
-                    defaultMessage='Open Windows Store'
-                />
-            );
-        }
         if (platform === 'darwin') {
             if (isMacAppStore) {
                 return (

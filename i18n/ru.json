@@ -384,7 +384,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "Версия {appName} {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Доступна новая версия",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Откройте магазин приложений Mac",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Откройте магазин приложений Windows",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Перезапустить и обновить",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Пропустить эту версию",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Посмотреть журнал изменений",

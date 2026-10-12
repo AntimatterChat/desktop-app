@@ -393,7 +393,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} version {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "新しいバージョンが利用可能です",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Mac App Storeを開く",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Windows Storeを開く",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "再起動して更新する",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "このバージョンをスキップ",
   "renderer.downloadsDropdown.Update.ViewChangelog": "変更履歴を見る",

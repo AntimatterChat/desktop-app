@@ -335,7 +335,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} version {version}",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "New version available",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Open Mac App Store",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Open Windows Store",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Skip this version",
   "renderer.downloadsDropdown.Update.ViewChangelog": "View changelog",
   "renderer.downloadsDropdown.Update.ViewDownloadOptions": "View download options",

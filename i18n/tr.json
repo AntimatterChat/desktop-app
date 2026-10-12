@@ -404,7 +404,6 @@
   "renderer.downloadsDropdown.Update.MattermostVersionX": "{appName} {version} sürümü",
   "renderer.downloadsDropdown.Update.NewDesktopVersionAvailable": "Yeni sürüm yayınlanmış",
   "renderer.downloadsDropdown.Update.OpenMacAppStore": "Mac App Store aç",
-  "renderer.downloadsDropdown.Update.OpenWindowsStore": "Windows Store aç",
   "renderer.downloadsDropdown.Update.RestartAndUpdate": "Yeniden başlat ve güncelle",
   "renderer.downloadsDropdown.Update.SkipThisVersion": "Bu sürümü atla",
   "renderer.downloadsDropdown.Update.ViewChangelog": "Değişiklik günlüğünü görüntüle",
