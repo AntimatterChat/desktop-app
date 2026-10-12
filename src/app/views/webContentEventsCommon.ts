@@ -4,7 +4,7 @@ import path from 'path';
 
 import type {Event, WebContentsConsoleMessageEventParams, WebContentsWillFrameNavigateEventParams} from 'electron';
 
-import {MATTERMOST_PROTOCOL} from 'common/constants';
+import {DEEP_LINK_PROTOCOLS} from 'common/constants';
 import type {Logger} from 'common/log';
 import {getLevel} from 'common/log';
 import {parseURL} from 'common/utils/url';
@@ -39,7 +39,7 @@ function sanitizeMessage(sourceURL: string, message: string) {
 }
 
 export function isCustomProtocol(url: URL) {
-    return url.protocol !== 'http:' && url.protocol !== 'https:' && url.protocol !== `${MATTERMOST_PROTOCOL}:`;
+    return url.protocol !== 'http:' && url.protocol !== 'https:' && !isDeepLinkProtocol(url);
 }
 
 // Subframes only guard against custom protocols launching external handlers; loopback/private
@@ -63,8 +63,8 @@ export function isAllowedSubframeNavigation(rawURL?: string): boolean {
     return ALLOWED_SUBFRAME_PROTOCOLS.has(parsedURL.protocol);
 }
 
-export function isMattermostProtocol(url: URL) {
-    return url.protocol === `${MATTERMOST_PROTOCOL}:`;
+export function isDeepLinkProtocol(url: URL) {
+    return DEEP_LINK_PROTOCOLS.some((protocol) => url.protocol === `${protocol}:`);
 }
 
 export const generateWillFrameNavigate = (log: Logger) => (event: Event<WebContentsWillFrameNavigateEventParams>) => {

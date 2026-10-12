@@ -11,7 +11,7 @@ import MenuManager from 'app/menus';
 import NavigationManager from 'app/navigationManager';
 import {MAIN_WINDOW_CREATED} from 'common/communication';
 import Config from 'common/config';
-import {MATTERMOST_PROTOCOL} from 'common/constants';
+import {ANTIMATTER_DEV_PROTOCOL, DEEP_LINK_PROTOCOLS} from 'common/constants';
 import {Logger} from 'common/log';
 import {MattermostServer} from 'common/servers/MattermostServer';
 import ServerManager from 'common/servers/serverManager';
@@ -47,8 +47,8 @@ export function getDeeplinkingURL(args: string[]) {
     if (Array.isArray(args) && args.length) {
     // deeplink urls should always be the last argument, but may not be the first (i.e. Windows with the app already running)
         const url = args[args.length - 1];
-        const protocol = isDev ? 'mattermost-dev' : MATTERMOST_PROTOCOL;
-        if (url && protocol && url.startsWith(protocol) && isValidURI(url)) {
+        const protocols = isDev ? [ANTIMATTER_DEV_PROTOCOL] : DEEP_LINK_PROTOCOLS;
+        if (url && protocols.some((protocol) => url.startsWith(`${protocol}:`)) && isValidURI(url)) {
             return url;
         }
     }

@@ -8,8 +8,8 @@ import {buildServerMap} from './serverMap';
 
 export function mattermostDeepLinkUrl(hostAndPath: string): string {
     // E2E always launches the unpacked binary (electron-is-dev=true), so deep links
-    // must use mattermost-dev:// regardless of the Playwright worker's NODE_ENV.
-    return `mattermost-dev://${hostAndPath}`;
+    // must use antimatter-dev:// regardless of the Playwright worker's NODE_ENV.
+    return `antimatter-dev://${hostAndPath}`;
 }
 
 /** Build a channel deep link that preserves the team path from the configured server URL. */

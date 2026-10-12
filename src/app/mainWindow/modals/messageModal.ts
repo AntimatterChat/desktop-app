@@ -14,7 +14,7 @@ import {getLocalPreload} from 'main/utils';
 
 import type {MessageModalInfo, MessageModalResult} from 'types/modals';
 
-const messageModalHtml = 'mattermost-desktop://renderer/message.html';
+const messageModalHtml = 'antimatter-desktop://renderer/message.html';
 
 export class MessageModal {
     constructor() {

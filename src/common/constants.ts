@@ -19,7 +19,14 @@ export const UPDATE_DOWNLOAD_ITEM: Omit<DownloadedItem, 'filename' | 'state'> = 
 };
 
 export const MAILTO_PREFIX = 'mailto:';
-export const MATTERMOST_PROTOCOL = 'mattermost';
+export const ANTIMATTER_PROTOCOL = 'antimatter';
+export const ANTIMATTER_DEV_PROTOCOL = 'antimatter-dev';
+
+// Mattermost's deep link scheme: still opened, for the links people already have
+export const LEGACY_MATTERMOST_PROTOCOL = 'mattermost';
+
+// The deep link schemes the app registers with the OS and opens
+export const DEEP_LINK_PROTOCOLS = [ANTIMATTER_PROTOCOL, LEGACY_MATTERMOST_PROTOCOL];
 
 // Regular expressions
 export const REGEX_EMAIL = /[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*/; // based on W3C input type email regex

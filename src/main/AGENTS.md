@@ -32,7 +32,7 @@ Collects CPU and memory metrics across all processes and views, sending them to 
 - **`CriticalErrorHandler`** (`CriticalErrorHandler.ts`): Handles uncaught exceptions, integrates with Sentry.
 - **`SentryHandler`** (`sentryHandler.ts`): Initializes Sentry SDK for error tracking in production. Adds app and platform context. Controlled by `Config.enableSentry`.
 - **`SecureStorage`**: Encrypted per-server secret storage using Electron's `safeStorage` API.
-- **`NonceManager`**: CSP nonces for internal `mattermost-desktop://` responses.
+- **`NonceManager`**: CSP nonces for internal `antimatter-desktop://` responses.
 - **`AppVersionManager`** (`AppVersionManager.ts`): Persists last app version and skipped version for update tracking. Extends `JsonFileManager`.
 - **`UserActivityMonitor`** (`UserActivityMonitor.ts`): Monitors system idle time via `powerMonitor.getSystemIdleTime()`. Emits `status` events for active/inactive transitions.
 - **`ContextMenu`** (`contextMenu.ts`): Right-click context menu for web contents using `electron-context-menu`.

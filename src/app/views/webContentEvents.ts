@@ -39,7 +39,7 @@ import allowProtocolDialog from 'main/security/allowProtocolDialog';
 import LocalNetworkAccessManager from 'main/security/localNetworkAccess';
 import {composeUserAgent} from 'main/utils';
 
-import {generateHandleConsoleMessage, generateWillFrameNavigate, isCustomProtocol, isMattermostProtocol} from './webContentEventsCommon';
+import {generateHandleConsoleMessage, generateWillFrameNavigate, isCustomProtocol, isDeepLinkProtocol} from './webContentEventsCommon';
 
 const log = new Logger('WebContentsEventManager');
 
@@ -167,8 +167,8 @@ export class WebContentsEventManager {
                 return PluginsPopUpsManager.handleNewWindow(webContentsId, details);
             }
 
-            // Check for mattermost protocol - handle internally
-            if (isMattermostProtocol(parsedURL)) {
+            // Check for the app's deep link protocols - handle internally
+            if (isDeepLinkProtocol(parsedURL)) {
                 NavigationManager.openLinkInNewTab(parsedURL);
                 return {action: 'deny'};
             }

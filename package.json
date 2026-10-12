@@ -1,19 +1,19 @@
 {
-  "name": "mattermost-desktop",
-  "productName": "Mattermost",
+  "name": "antimatter-desktop",
+  "productName": "Antimatter",
   "version": "6.4.0-develop.1",
-  "description": "Mattermost",
+  "description": "Antimatter Desktop App, based on the Mattermost Desktop App",
   "main": "dist/index.js",
-  "author": "Mattermost, Inc. <feedback@mattermost.com>",
+  "author": "Antimatter contributors",
   "license": "Apache-2.0",
-  "desktopName": "com.Mattermost.Desktop",
-  "homepage": "https://mattermost.com",
+  "desktopName": "chat.antimatter.desktop",
+  "homepage": "https://antimatter.chat",
   "engines": {
     "node": ">=24.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mattermost/desktop.git"
+    "url": "git+https://github.com/AntimatterChat/desktop-app.git"
   },
   "scripts": {
     "postinstall": "patch-package && electron-builder install-app-deps && node node_modules/electron/install.js",

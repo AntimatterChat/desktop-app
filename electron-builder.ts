@@ -19,7 +19,7 @@ function getMacVersions() {
 }
 
 const config = {
-    appId: 'Mattermost.Desktop',
+    appId: 'chat.antimatter.desktop',
     artifactName: '${version}/${name}-${version}-${os}-${arch}.${ext}',
     directories: {
         buildResources: 'src/assets',
@@ -59,8 +59,11 @@ const config = {
     ],
     protocols: [
         {
-            name: 'Mattermost',
+            name: 'Antimatter',
             schemes: [
+                'antimatter',
+
+                // Mattermost's scheme, still opened for the links people already have
                 'mattermost',
             ],
         },
@@ -69,7 +72,7 @@ const config = {
     afterPack: 'scripts/afterpack.js',
     deb: {
         artifactName: '${version}/${name}_${version}-1_${arch}.${ext}',
-        synopsis: 'Mattermost Desktop App',
+        synopsis: 'Antimatter Desktop App',
         depends: [
             'libnotify4',
             'libxtst6',
@@ -93,8 +96,11 @@ const config = {
             'rpm',
             'flatpak',
         ],
-        appId: 'com.Mattermost.Desktop',
-        executableName: 'com.Mattermost.Desktop',
+        appId: 'chat.antimatter.desktop',
+        executableName: 'chat.antimatter.desktop',
+        icon: 'icons',
+        maintainer: 'Antimatter contributors <https://github.com/AntimatterChat/desktop-app>',
+        vendor: 'Antimatter',
         desktop: {
             entry: {
                 StartupWMClass: pkg.desktopName,
@@ -142,7 +148,7 @@ const config = {
         extendInfo: {
             NSMicrophoneUsageDescription: 'Microphone access is used to capture audio for voice communication and recordings.',
             NSCameraUsageDescription: 'Camera access is used to capture video for video conferencing and recordings.',
-            NSFocusStatusUsageDescription: 'Focus status is used by Mattermost to determine whether to send notifications or not.',
+            NSFocusStatusUsageDescription: 'Focus status is used by Antimatter to determine whether to send notifications or not.',
             LSFileQuarantineEnabled: true,
         },
         x64ArchFiles: '**/node_modules/@koromix/koffi-darwin-*/darwin_*/koffi.node',
@@ -201,16 +207,18 @@ const config = {
             },
         ],
         signExts: ['.dll', '.node'],
+
+        // Azure Trusted Signing, configured from the environment when a signing account is available
         azureSignOptions: process.env.AZURE_CLIENT_ID ? {
-            certificateProfileName: 'mattermost-desktop-app',
-            codeSigningAccountName: 'DesktopAppCodeSigning',
-            endpoint: 'https://eus.codesigning.azure.net',
-            publisherName: 'CN="Mattermost, Inc.", O="Mattermost, Inc.", L=Palo Alto, S=California, C=US',
+            certificateProfileName: process.env.AZURE_SIGN_CERTIFICATE_PROFILE,
+            codeSigningAccountName: process.env.AZURE_SIGN_ACCOUNT,
+            endpoint: process.env.AZURE_SIGN_ENDPOINT,
+            publisherName: process.env.AZURE_SIGN_PUBLISHER,
         } : null,
     },
     msi: {
         additionalWixArgs: ['-ext', 'WixUtilExtension'],
-        upgradeCode: '{8523DAF0-699D-4CC7-9A65-C5E696A9DE6D}',
+        upgradeCode: '{FC1E639B-7BFC-40F8-BD17-633F142321C1}',
         perMachine: true,
     },
     rpm: {

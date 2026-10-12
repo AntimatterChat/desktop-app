@@ -20,7 +20,7 @@ function getWindowsDoNotDisturb() {
     case 2:
         return true;
     case 1:
-        return !(isPriority('Mattermost.Desktop').value);
+        return !(isPriority('chat.antimatter.desktop').value);
     default:
         return false;
     }

@@ -10,7 +10,7 @@ Windows, tabs, modals, menus, and Calls integration. These modules sit between t
 - **`MainWindow`** (`mainWindow/mainWindow.ts`): Primary `BrowserWindow` — creation, bounds persistence, fullscreen, focus.
 - **`PopoutManager`** (`windows/popoutManager.ts`): Popout windows for views (RHS, boards). Creates `BaseWindow` instances that are isolated to a specific URL.
 
-To add a new window: create a class using `BaseWindow` (or raw `BrowserWindow` for specialized cases like frameless/transparent). Singleton pattern if only one instance needed. Set preload via `getLocalPreload('internalAPI.js')`, load content via `mattermost-desktop://renderer/myPage.html`, and attach navigation guards.
+To add a new window: create a class using `BaseWindow` (or raw `BrowserWindow` for specialized cases like frameless/transparent). Singleton pattern if only one instance needed. Set preload via `getLocalPreload('internalAPI.js')`, load content via `antimatter-desktop://renderer/myPage.html`, and attach navigation guards.
 
 ### Menus (`menus/`)
 

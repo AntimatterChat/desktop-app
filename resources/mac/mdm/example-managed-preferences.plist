@@ -6,9 +6,9 @@
 	<array>
 		<dict>
 			<key>name</key>
-			<string>Community</string>
+			<string>Example</string>
 			<key>url</key>
-			<string>https://community.mattermost.com</string>
+			<string>https://chat.example.com</string>
 		</dict>
 	</array>
 	<key>EnableServerManagement</key>

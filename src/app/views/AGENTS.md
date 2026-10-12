@@ -24,4 +24,4 @@ Other views include `LoadingScreen`, `ServerDropdownView`, `DownloadsDropdownVie
 
 ## Adding new WebContentsViews (overlays)
 
-For views that render on top of existing windows: create a `WebContentsView` with the internal preload script, load via `mattermost-desktop://renderer/myView.html`, add/remove from the parent window's `contentView`, and handle bounds changes on parent resize.
+For views that render on top of existing windows: create a `WebContentsView` with the internal preload script, load via `antimatter-desktop://renderer/myView.html`, add/remove from the parent window's `contentView`, and handle bounds changes on parent resize.

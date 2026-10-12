@@ -142,8 +142,8 @@ test.describe('server_management/popout_windows', () => {
             const mainWindowTitle = await mainWindow.title();
             const popoutWindowTitle = await popoutWindow.title();
 
-            expect(mainWindowTitle).toContain('Mattermost');
-            expect(popoutWindowTitle).toContain('Mattermost');
+            expect(mainWindowTitle).toContain('Antimatter');
+            expect(popoutWindowTitle).toContain('Antimatter');
         });
 
         test('MM-T4411_2 should maintain separate navigation state in popout window', {tag: ['@P2', '@all']}, async () => {

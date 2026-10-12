@@ -26,10 +26,10 @@ test.describe('application', () => {
 
         // When running via the unpacked Electron binary (not a packaged app),
         // electron-is-dev resolves isDev=true, so getDeeplinkingURL() expects
-        // the 'mattermost-dev://' protocol prefix rather than 'mattermost://'.
+        // the 'antimatter-dev://' protocol prefix rather than 'antimatter://'.
         app = await electron.launch({
             executablePath: electronBinaryPath,
-            args: [appDir, `--user-data-dir=${userDataDir}`, '--no-sandbox', '--disable-gpu', 'mattermost-dev://github.com/test/url'],
+            args: [appDir, `--user-data-dir=${userDataDir}`, '--no-sandbox', '--disable-gpu', 'antimatter-dev://github.com/test/url'],
             env: {...process.env, NODE_ENV: 'test'},
             timeout: 60_000,
         });
@@ -75,7 +75,7 @@ test.describe('macOS open-url deep link', () => {
         {tag: ['@P1', '@darwin']},
         async ({electronApp, mainWindow}) => {
             await electronApp.evaluate(({app: electronApp}) => {
-                electronApp.emit('open-url', {preventDefault: () => undefined}, 'mattermost-dev://github.com/test/url');
+                electronApp.emit('open-url', {preventDefault: () => undefined}, 'antimatter-dev://github.com/test/url');
             });
 
             const serverName = demoConfig.servers[1].name;

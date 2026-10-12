@@ -42,6 +42,7 @@ const buildConfig: BuildConfig = {
     linuxGitHubReleaseURL: 'https://github.com/mattermost/desktop/releases/tag',
     managedResources: ['trusted'],
     allowedProtocols: [
+        'antimatter',
         'mattermost',
         'ftp',
         'mailto',

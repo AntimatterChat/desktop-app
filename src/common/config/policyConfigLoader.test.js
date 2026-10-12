@@ -25,7 +25,7 @@ jest.mock('registry-js', () => {
                         {name: 'jitsi-lm', data: JSON.stringify({serverOrigin: 'https://chat-lm.example.com', embeddedOrigin: 'https://meet-lm.example.com'})},
                     ];
                 }
-                if (key.includes('SOFTWARE\\Policies\\Mattermost')) {
+                if (key.includes('SOFTWARE\\Policies\\Antimatter')) {
                     return [
                         {name: 'EnableServerManagement', data: 1},
                         {name: 'EnableAutoUpdater', data: 0},
@@ -45,7 +45,7 @@ jest.mock('registry-js', () => {
                         {name: 'jitsi-cu', data: JSON.stringify({serverOrigin: 'https://chat-cu.example.com', embeddedOrigin: 'https://meet-cu.example.com'})},
                     ];
                 }
-                if (key.includes('SOFTWARE\\Policies\\Mattermost')) {
+                if (key.includes('SOFTWARE\\Policies\\Antimatter')) {
                     return [
                         {name: 'EnableServerManagement', data: 0},
                         {name: 'EnableAutoUpdater', data: 1},
@@ -120,7 +120,7 @@ describe('common/config/policyConfigLoader', () => {
 
             it('handles undefined from one hive', () => {
                 enumerateValues.mockImplementation((hive, key) => {
-                    if (key.includes('Mattermost') && !key.includes('DefaultServerList')) {
+                    if (key.includes('Antimatter') && !key.includes('DefaultServerList')) {
                         return hive === 'HKEY_LOCAL_MACHINE' ? [{name: 'EnableServerManagement', data: 1}] : [];
                     }
                     return [];
@@ -131,10 +131,10 @@ describe('common/config/policyConfigLoader', () => {
 
             it('handles registry error in one hive', () => {
                 enumerateValues.mockImplementation((hive, key) => {
-                    if (key.includes('Mattermost') && hive === 'HKEY_CURRENT_USER') {
+                    if (key.includes('Antimatter') && hive === 'HKEY_CURRENT_USER') {
                         throw new Error('Registry access error');
                     }
-                    if (key.includes('Mattermost') && !key.includes('DefaultServerList')) {
+                    if (key.includes('Antimatter') && !key.includes('DefaultServerList')) {
                         return [{name: 'EnableServerManagement', data: 1}];
                     }
                     if (key.endsWith('DefaultServerList')) {

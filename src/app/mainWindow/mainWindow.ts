@@ -116,7 +116,7 @@ export class MainWindow extends EventEmitter {
         this.win.browserWindow.webContents.on('devtools-focused', this.emitShortcutMenuUpdate);
         this.win.browserWindow.webContents.on('devtools-closed', this.emitShortcutMenuUpdate);
 
-        const localURL = 'mattermost-desktop://renderer/index.html';
+        const localURL = 'antimatter-desktop://renderer/index.html';
         performanceMonitor.registerView('MainWindow', this.win.browserWindow.webContents);
         this.win.registerThemeManager(ThemeManager.registerMainWindowView);
         this.win.browserWindow.loadURL(localURL).catch(

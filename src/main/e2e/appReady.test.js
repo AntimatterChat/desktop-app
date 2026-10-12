@@ -24,7 +24,7 @@ describe('main/e2e/appReady', () => {
                 listeners[event] = cb;
             }),
             webContents: {
-                getURL: () => 'mattermost-desktop://renderer/index.html',
+                getURL: () => 'antimatter-desktop://renderer/index.html',
                 once: jest.fn((event, cb) => {
                     listeners[`wc:${event}`] = cb;
                 }),

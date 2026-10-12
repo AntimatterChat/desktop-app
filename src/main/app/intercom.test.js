@@ -74,7 +74,7 @@ describe('main/app/intercom', () => {
             ModalManager.addModal.mockReturnValue(promise);
 
             handleWelcomeScreenModal();
-            expect(ModalManager.addModal).toHaveBeenCalledWith('welcomeScreen', 'mattermost-desktop://renderer/welcomeScreen.html', '/some/preload.js', {prefillURL: undefined}, {}, true);
+            expect(ModalManager.addModal).toHaveBeenCalledWith('welcomeScreen', 'antimatter-desktop://renderer/welcomeScreen.html', '/some/preload.js', {prefillURL: undefined}, {}, true);
         });
     });
 
@@ -100,7 +100,7 @@ describe('main/app/intercom', () => {
 
         it('should open settings modal using addPriorityModal', () => {
             handleShowSettingsModal();
-            expect(ModalManager.addPriorityModal).toHaveBeenCalledWith('settingsModal', 'mattermost-desktop://renderer/settings.html', '/some/preload.js', null, {});
+            expect(ModalManager.addPriorityModal).toHaveBeenCalledWith('settingsModal', 'antimatter-desktop://renderer/settings.html', '/some/preload.js', null, {});
         });
 
         it('should not open settings modal if no main window', () => {

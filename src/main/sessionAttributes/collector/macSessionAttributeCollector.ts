@@ -146,7 +146,7 @@ export class MacSessionAttributeCollector extends SessionAttributeCollector {
             if (!this.bindings) {
                 return '';
             }
-            const prefsName = this.createCfString('mattermost-desktop');
+            const prefsName = this.createCfString('antimatter-desktop');
             if (prefsName) {
                 release.push(prefsName);
             }
@@ -217,7 +217,7 @@ export class MacSessionAttributeCollector extends SessionAttributeCollector {
             if (!this.bindings) {
                 return '';
             }
-            const storeName = this.createCfString('mattermost-desktop');
+            const storeName = this.createCfString('antimatter-desktop');
             if (storeName) {
                 release.push(storeName);
             }

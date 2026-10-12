@@ -38,7 +38,7 @@ import {
     SERVER_URL_CHANGED,
 } from 'common/communication';
 import Config from 'common/config';
-import {MATTERMOST_PROTOCOL} from 'common/constants';
+import {ANTIMATTER_DEV_PROTOCOL, DEEP_LINK_PROTOCOLS} from 'common/constants';
 import {Logger} from 'common/log';
 import ServerManager from 'common/servers/serverManager';
 import {parseURL} from 'common/utils/url';
@@ -232,9 +232,9 @@ function initializeBeforeAppReady() {
     AllowProtocolDialog.init();
 
     if (isDev && process.env.NODE_ENV !== 'test') {
-        app.setAsDefaultProtocolClient('mattermost-dev', process.execPath, [path.resolve(process.cwd(), 'dist/')]);
+        app.setAsDefaultProtocolClient(ANTIMATTER_DEV_PROTOCOL, process.execPath, [path.resolve(process.cwd(), 'dist/')]);
     } else {
-        app.setAsDefaultProtocolClient(MATTERMOST_PROTOCOL);
+        DEEP_LINK_PROTOCOLS.forEach((protocol) => app.setAsDefaultProtocolClient(protocol));
     }
 
     if (process.platform === 'darwin' || process.platform === 'win32') {
@@ -242,7 +242,7 @@ function initializeBeforeAppReady() {
     }
 
     protocol.registerSchemesAsPrivileged([
-        {scheme: 'mattermost-desktop', privileges: {standard: true}},
+        {scheme: 'antimatter-desktop', privileges: {standard: true}},
     ]);
 }
 
@@ -287,7 +287,7 @@ async function initializeAfterAppReady() {
     // Block all NTLM/Negotiate requests by default
     session.defaultSession.allowNTLMCredentialsForDomains('');
 
-    protocol.handle('mattermost-desktop', (request: Request) => {
+    protocol.handle('antimatter-desktop', (request: Request) => {
         const url = parseURL(request.url);
         if (!url) {
             return new Response('bad', {status: 400});
@@ -331,7 +331,7 @@ async function initializeAfterAppReady() {
     ServerManager.init();
     ServerManager.off(SERVER_ADDED, PreAuthManager.loadPreAuthSecretForServer);
 
-    app.setAppUserModelId('Mattermost.Desktop'); // Use explicit AppUserModelID
+    app.setAppUserModelId('chat.antimatter.desktop'); // Use explicit AppUserModelID
     const defaultSession = session.defaultSession;
     defaultSession.webRequest.onBeforeRequest(async (details, callback) => {
         try {
@@ -355,7 +355,7 @@ async function initializeAfterAppReady() {
 
     defaultSession.webRequest.onHeadersReceived((details, callback) => {
         const url = parseURL(details.url);
-        if (url?.protocol === 'mattermost-desktop:' && url?.pathname.endsWith('html')) {
+        if (url?.protocol === 'antimatter-desktop:' && url?.pathname.endsWith('html')) {
             callback({
                 responseHeaders: {
                     ...details.responseHeaders,

@@ -77,14 +77,15 @@ export function getLocalPreload(file: string) {
 export function composeUserAgent(browserMode?: boolean) {
     const baseUserAgent = app.userAgentFallback.split(' ');
 
-    // filter out the Mattermost tag that gets added earlier on
-    const filteredUserAgent = baseUserAgent.filter((ua) => !ua.startsWith('Mattermost'));
+    // filter out the app name tag that Electron adds
+    const filteredUserAgent = baseUserAgent.filter((ua) => !ua.startsWith('Antimatter') && !ua.startsWith('Mattermost'));
 
     if (browserMode) {
         return filteredUserAgent.join(' ');
     }
 
-    return `${filteredUserAgent.join(' ')} Mattermost/${app.getVersion()}`;
+    // The servers and their plugins recognise the desktop app by a last "Mattermost/<version>" token, keep it.
+    return `${filteredUserAgent.join(' ')} Antimatter/${app.getVersion()} Mattermost/${app.getVersion()}`;
 }
 
 export function isStringWithLength(string: unknown): boolean {
@@ -128,7 +129,7 @@ export function resetScreensharePermissionsMacOS() {
     if (process.platform !== 'darwin') {
         return Promise.resolve();
     }
-    return exec('tccutil reset ScreenCapture Mattermost.Desktop',
+    return exec('tccutil reset ScreenCapture chat.antimatter.desktop',
         {timeout: 1000});
 }
 

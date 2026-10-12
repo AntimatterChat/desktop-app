@@ -56,7 +56,7 @@ type Fixtures = {
     /** Map of server name → [{win, webContentsId}] for external server views. */
     serverMap: ServerMap;
 
-    /** The main internal window (mattermost-desktop://renderer/index.html). */
+    /** The main internal window (antimatter-desktop://renderer/index.html). */
     mainWindow: Page;
 };
 

@@ -110,7 +110,7 @@ jest.mock('common/constants', () => {
     const original = jest.requireActual('common/constants');
     return {
         ...original,
-        MATTERMOST_PROTOCOL: 'mattermost',
+        DEEP_LINK_PROTOCOLS: ['antimatter', 'mattermost'],
     };
 });
 

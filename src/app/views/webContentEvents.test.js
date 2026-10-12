@@ -69,7 +69,7 @@ jest.mock('main/app/utils', () => ({
 }));
 
 jest.mock('common/constants', () => ({
-    MATTERMOST_PROTOCOL: 'mattermost',
+    DEEP_LINK_PROTOCOLS: ['antimatter', 'mattermost'],
     MAX_URL_LENGTH: 8192,
 }));
 

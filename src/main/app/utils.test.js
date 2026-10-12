@@ -77,7 +77,7 @@ jest.mock('app/navigationManager', () => ({
 }));
 
 jest.mock('./initialize', () => ({
-    mainProtocol: 'mattermost',
+    mainProtocol: 'antimatter',
 }));
 
 jest.mock('common/servers/MattermostServer', () => ({
@@ -99,15 +99,23 @@ jest.mock('main/server/serverInfo', () => ({
 describe('main/app/utils', () => {
     describe('getDeeplinkingURL', () => {
         it('should return undefined if deeplinking URL is not last argument', () => {
-            expect(getDeeplinkingURL(['mattermost', 'mattermost://server-1.com', '--oops'])).toBeUndefined();
+            expect(getDeeplinkingURL(['antimatter', 'antimatter://server-1.com', '--oops'])).toBeUndefined();
         });
 
         it('should return undefined if deeplinking URL is not valid', () => {
-            expect(getDeeplinkingURL(['mattermost', 'mattermost://,a<lolbad'])).toBeUndefined();
+            expect(getDeeplinkingURL(['antimatter', 'antimatter://,a<lolbad'])).toBeUndefined();
         });
 
         it('should return url if deeplinking URL is valid', () => {
-            expect(getDeeplinkingURL(['mattermost', 'mattermost://server-1.com'])).toBe('mattermost://server-1.com');
+            expect(getDeeplinkingURL(['antimatter', 'antimatter://server-1.com'])).toBe('antimatter://server-1.com');
+        });
+
+        it('should still accept the legacy mattermost scheme', () => {
+            expect(getDeeplinkingURL(['antimatter', 'mattermost://server-1.com'])).toBe('mattermost://server-1.com');
+        });
+
+        it('should return undefined for other schemes', () => {
+            expect(getDeeplinkingURL(['antimatter', 'other://server-1.com'])).toBeUndefined();
         });
     });
 

@@ -59,7 +59,7 @@ export async function clearCertificateErrorCallbacks(app: ElectronApplication): 
 
 /**
  * The former native message boxes are now custom modals rendered as a
- * WebContentsView (mattermost-desktop://renderer/message.html). Its footer
+ * WebContentsView (antimatter-desktop://renderer/message.html). Its footer
  * buttons render in declaration order, so `response` is the zero-based index of
  * the button to click, matching the old dialog.showMessageBox response index.
  */

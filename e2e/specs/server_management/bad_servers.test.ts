@@ -150,7 +150,7 @@ test.describe('Bad Server Configurations', () => {
 
         // Deliberately NO defensive beforeEach here to close stray dropdown/newServer
         // windows: a `.includes('dropdown')` URL filter matches the SERVER DROPDOWN's
-        // own WebContentsView (mattermost-desktop://renderer/dropdown.html), which is
+        // own WebContentsView (antimatter-desktop://renderer/dropdown.html), which is
         // created at MAIN_WINDOW_CREATED and required for OPEN_SERVERS_DROPDOWN to work
         // (ServerDropdownView.handleOpen returns silently if this.view is destroyed).
         // Closing it via Playwright's Page.close() destroys the WebContents, so every

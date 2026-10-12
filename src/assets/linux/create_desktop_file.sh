@@ -7,17 +7,17 @@ cd "$(dirname "$THIS_PATH")"
 FULL_PATH=$(pwd)
 cd "$WORKING_DIR"
 
-cat <<EOS > com.Mattermost.Desktop.desktop
+cat <<EOS > chat.antimatter.desktop.desktop
 [Desktop Entry]
-Name=Mattermost
-Comment=Mattermost Desktop application for Linux
-Exec="${FULL_PATH}/com.Mattermost.Desktop" %U
+Name=Antimatter
+Comment=Antimatter Desktop application for Linux
+Exec="${FULL_PATH}/chat.antimatter.desktop" %U
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/mattermost
+MimeType=x-scheme-handler/antimatter;x-scheme-handler/mattermost;
 Icon="${FULL_PATH}/app_icon.png"
 Categories=Network;InstantMessaging;
-StartupWMClass=com.Mattermost.Desktop
+StartupWMClass=chat.antimatter.desktop
 EOS
 
-chmod +x com.Mattermost.Desktop.desktop
+chmod +x chat.antimatter.desktop.desktop

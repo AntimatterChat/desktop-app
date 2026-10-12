@@ -7,11 +7,11 @@ import type {Logger} from 'common/log';
 import {getLevel} from 'common/log';
 import {parseURL} from 'common/utils/url';
 
-import {generateHandleConsoleMessage, generateWillFrameNavigate, isAllowedSubframeNavigation, isCustomProtocol, isMattermostProtocol} from './webContentEventsCommon';
+import {generateHandleConsoleMessage, generateWillFrameNavigate, isAllowedSubframeNavigation, isCustomProtocol, isDeepLinkProtocol} from './webContentEventsCommon';
 
 // Mock the electron-builder.json protocols
 jest.mock('common/constants', () => ({
-    MATTERMOST_PROTOCOL: 'mattermost',
+    DEEP_LINK_PROTOCOLS: ['antimatter', 'mattermost'],
 }));
 
 // Mock the log module
@@ -344,39 +344,43 @@ describe('webContentEventsCommon', () => {
         });
     });
 
-    describe('isMattermostProtocol', () => {
-        it('should return true for mattermost protocol URLs', () => {
-            expect(isMattermostProtocol(new URL('mattermost://server1'))).toBe(true);
+    describe('isDeepLinkProtocol', () => {
+        it('should return true for antimatter protocol URLs', () => {
+            expect(isDeepLinkProtocol(new URL('antimatter://server1'))).toBe(true);
+        });
+
+        it('should return true for the legacy mattermost protocol URLs', () => {
+            expect(isDeepLinkProtocol(new URL('mattermost://server1'))).toBe(true);
         });
 
         it('should return false for http URLs', () => {
-            expect(isMattermostProtocol(new URL('http://example.com'))).toBe(false);
+            expect(isDeepLinkProtocol(new URL('http://example.com'))).toBe(false);
         });
 
         it('should return false for https URLs', () => {
-            expect(isMattermostProtocol(new URL('https://example.com'))).toBe(false);
+            expect(isDeepLinkProtocol(new URL('https://example.com'))).toBe(false);
         });
 
         it('should return false for other custom protocol URLs', () => {
-            expect(isMattermostProtocol(new URL('custom://example.com'))).toBe(false);
+            expect(isDeepLinkProtocol(new URL('custom://example.com'))).toBe(false);
         });
 
         it('should return false for file protocol URLs', () => {
-            expect(isMattermostProtocol(new URL('file:///path/to/file'))).toBe(false);
+            expect(isDeepLinkProtocol(new URL('file:///path/to/file'))).toBe(false);
         });
 
         it('should handle URLs with different case mattermost protocol', () => {
-            expect(isMattermostProtocol(new URL('MATTERMOST://server1'))).toBe(true);
+            expect(isDeepLinkProtocol(new URL('MATTERMOST://server1'))).toBe(true);
         });
 
         it('should handle mattermost URLs with paths and query parameters', () => {
-            expect(isMattermostProtocol(new URL('mattermost://server1/path?param=value'))).toBe(true);
+            expect(isDeepLinkProtocol(new URL('mattermost://server1/path?param=value'))).toBe(true);
         });
 
         it('should handle mattermost URLs with different servers', () => {
-            expect(isMattermostProtocol(new URL('mattermost://server1'))).toBe(true);
-            expect(isMattermostProtocol(new URL('mattermost://server2'))).toBe(true);
-            expect(isMattermostProtocol(new URL('mattermost://my-server.com'))).toBe(true);
+            expect(isDeepLinkProtocol(new URL('mattermost://server1'))).toBe(true);
+            expect(isDeepLinkProtocol(new URL('mattermost://server2'))).toBe(true);
+            expect(isDeepLinkProtocol(new URL('mattermost://my-server.com'))).toBe(true);
         });
     });
 });

@@ -108,4 +108,4 @@ plugins: [
 ],
 ```
 
-Then load from main process: `mattermost-desktop://renderer/myModal.html`.
+Then load from main process: `antimatter-desktop://renderer/myModal.html`.

@@ -560,7 +560,7 @@ module.exports = {
             const windows = app.windows().filter((win) => {
                 try {
                     const url = win.url();
-                    return url && !url.includes('mattermost-desktop://');
+                    return url && !url.includes('antimatter-desktop://');
                 } catch (e) {
                     // Window might be closed or not ready
                     return false;

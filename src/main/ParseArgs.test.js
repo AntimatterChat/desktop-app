@@ -13,15 +13,21 @@ import parse from 'main/ParseArgs';
 
 describe('main/ParseArgs', () => {
     it('should remove arguments following a deeplink', () => {
-        const args = parse(['mattermost', '--disableDevMode', 'mattermost://server-1.com']);
+        const args = parse(['antimatter', '--disableDevMode', 'antimatter://server-1.com', '--dataDir', '/tmp']);
         expect(args.disableDevMode).toBe(true);
+        expect(args.dataDir).toBeUndefined();
+    });
+
+    it('should remove arguments following a legacy mattermost deeplink', () => {
+        const args = parse(['antimatter', 'mattermost://server-1.com', '--dataDir', '/tmp']);
+        expect(args.dataDir).toBeUndefined();
     });
 
     it('should show version and exit when specified', async () => {
         jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
         const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {});
         const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-        parse(['mattermost', '--version', 'mattermost://server-1.com']);
+        parse(['antimatter', '--version', 'antimatter://server-1.com']);
         expect(exitSpy).toHaveBeenCalledWith(0);
         expect(logSpy).toHaveBeenCalledWith(dummyVersion);
     });
