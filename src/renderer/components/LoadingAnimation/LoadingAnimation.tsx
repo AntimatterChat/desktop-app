@@ -23,8 +23,10 @@ type Props = {
     onLoadAnimationComplete?: () => void;
 }
 
+const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
 /**
- * A function component for rendering the animated MM logo loading sequence
+ * A function component for rendering the animated Antimatter logo loading sequence
  * @param {boolean} loading - Prop that indicates whether currently loading or not
  * @param {boolean} darkMode - Prop that indicates if dark mode is enabled
  * @param {function} onLoadingAnimationComplete - Callback function to update when internal loading animation is complete
@@ -36,6 +38,17 @@ function LoadingAnimation({
     const loadingIconContainerRef = React.useRef(null);
     const [animationState, setAnimationState] = React.useState(LOADING_STATE.INITIALIZING);
     const [loadingAnimationComplete, setLoadingAnimationComplete] = React.useState(false);
+    const [reducedMotion, setReducedMotion] = React.useState(prefersReducedMotion);
+
+    React.useEffect(() => {
+        const query = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+        if (!query) {
+            return undefined;
+        }
+        const handleChange = () => setReducedMotion(query.matches);
+        query.addEventListener('change', handleChange);
+        return () => query.removeEventListener('change', handleChange);
+    }, []);
 
     React.useEffect(() => {
         if (loading) {
@@ -58,12 +71,12 @@ function LoadingAnimation({
         }
     }, [loadingAnimationComplete]);
 
-    // listen for end of the css logo animation sequence
+    // listen for the end of the css logo animation sequence: the spark lighting up
     useAnimationEnd<HTMLDivElement>(loadingIconContainerRef, () => {
         setTimeout(() => {
             setLoadingAnimationComplete(true);
         }, ANIMATION_COMPLETION_DELAY);
-    }, 'LoadingAnimation__compass-shrink');
+    }, 'LoadingAnimation__spark-pop');
 
     // listen for end of final css logo fade/shrink animation sequence
     useAnimationEnd<HTMLDivElement>(loadingIconContainerRef, () => {
@@ -82,7 +95,7 @@ function LoadingAnimation({
                 'LoadingAnimation--loaded': animationState === LOADING_STATE.LOADED,
             })}
         >
-            <LoadingIcon/>
+            <LoadingIcon reducedMotion={reducedMotion}/>
         </div>
     );
 }
