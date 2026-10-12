@@ -84,8 +84,8 @@ body {
                     width: 100%;
                     height: 100%;
 
-                    &.mattermost {
-                        @include file-icon('assets/thumbnails/mattermost.svg');
+                    &.antimatter {
+                        @include file-icon('assets/thumbnails/antimatter.svg');
                         background-size: 32px 32px;
                     }
                     &.text {
