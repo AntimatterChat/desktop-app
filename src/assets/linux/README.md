@@ -1,4 +1,4 @@
-# Mattermost Desktop for Linux
+# Antimatter Desktop for Linux
 
 ## Table of Contents
 
@@ -10,58 +10,56 @@
 
 ## Install
 
-If you installed the application via a package manager, it's ready to use in your system. Please follow the [User Guide](#user-guide) for further information.
+If you installed the application with a package manager, it's ready to use. See the [User Guide](#user-guide) below.
 
-Otherwise, first locate the extracted directory in your desired directory (e.g. `/opt/mattermost-desktop`) and follow the steps below. (This directory also contains this README here.)
+Otherwise, extract the archive in a directory of your choice (e.g. `/opt/antimatter-desktop`, which also contains this
+README) and follow the steps below.
 
 ### Desktop launcher
 
-Execute the script file to create a `com.Mattermost.Desktop.desktop` file.
+Run the script to create a `chat.antimatter.desktop.desktop` file:
 
 ```
-/opt/mattermost-desktop/create_desktop_file.sh
+/opt/antimatter-desktop/create_desktop_file.sh
 ```
 
-Then move it to the appropriate directory of your desktop environment. For example, on Ubuntu Unity it's `~/.local/share/applications/` for the current user.
+Then move it to your desktop environment's applications directory, for example `~/.local/share/applications/` for
+the current user:
 
 ```
-mv com.Mattermost.Desktop.desktop ~/.local/share/applications/
+mv chat.antimatter.desktop.desktop ~/.local/share/applications/
 ```
+
+The launcher also registers the app for `antimatter://` links (and for `mattermost://` links).
 
 ### Terminal command
 
-Set a `PATH` environment variable to enable launching from the terminal. For example, you can append the following line into `~/.bashrc`.
+To launch the app from a terminal, add its directory to your `PATH`, for example in `~/.bashrc`:
 
 ```sh
-# assuming that /opt/mattermost-desktop/com.Mattermost.Desktop is the executable file.
-export PATH=$PATH:/opt/mattermost-desktop
+# assuming that /opt/antimatter-desktop/chat.antimatter.desktop is the executable file
+export PATH=$PATH:/opt/antimatter-desktop
 ```
 
-Alternatively, you can also create a symbolic link for the application.
+Or create a symbolic link to it:
 
 ```sh
-sudo ln -s /opt/mattermost-desktop/com.Mattermost.Desktop /usr/local/bin/mattermost-desktop
+sudo ln -s /opt/antimatter-desktop/chat.antimatter.desktop /usr/local/bin/antimatter-desktop
 ```
-
-You're now all set! See the [User Guide](#user-guide) below for instructions.
 
 
 ## User Guide
 
-After launching, you need to configure the application to interact with your server.
+On the first launch, enter the URL of your Antimatter server (beginning with `http://` or `https://`) and a name for
+it, then select **Connect**. You can add other servers later from the server dropdown or from **Settings**.
 
-1. If you don't see a page titled "Settings", select **File** > **Settings...** from the menu bar.
-2. Click **Add new server** next to the right of Server Management section.
-3. Enter **Name** and a valid **URL**, which begins with either `http://` or `https://`.
-4. Click **Add**.
-5. Click **Save**.
-
-More guides are available at [Mattermost Documentation](https://docs.mattermost.com/messaging/managing-desktop-app-servers.html).
+More help is available at [antimatter.chat/help.html](https://antimatter.chat/help.html).
 
 
 ## Contributing
 
-See [contributing guidelines](https://github.com/mattermost/desktop/blob/master/CONTRIBUTING.md) for reporting bugs, features or submitting pull requests.
+See the [contributing guidelines](https://github.com/AntimatterChat/desktop-app/blob/main/CONTRIBUTING.md) to report
+bugs, suggest features or submit pull requests.
 
 
 ## License

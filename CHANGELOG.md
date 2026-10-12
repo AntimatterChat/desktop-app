@@ -1,3 +1,4 @@
-# Mattermost Desktop Application Changelog
+# Antimatter Desktop App Changelog
 
-The Desktop App changelog has moved to the [Admin Documentation](https://docs.mattermost.com/help/apps/desktop-changelog.html).
+The changes of each version are listed in its release notes, on the
+[releases page](https://github.com/AntimatterChat/desktop-app/releases).

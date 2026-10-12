@@ -1,50 +1,86 @@
-# Mattermost Desktop
+# Antimatter Desktop
 
-[Mattermost](https://mattermost.com) is an open source platform for secure collaboration across the entire software development lifecycle. This repo is for the native desktop application that's built on [Electron](http://electron.atom.io/); it runs on Windows, Mac, and Linux.
+The desktop app of [Antimatter](https://antimatter.chat), the free, open source team chat you host yourself. It wraps
+your Antimatter server's web app in a native window for Windows, macOS and Linux, built on
+[Electron](https://www.electronjs.org/).
 
-Originally created as "electron-mattermost" by Yuya Ochiai.
+It is a fork of the [Mattermost Desktop App](https://github.com/mattermost/desktop) (originally created as
+"electron-mattermost" by Yuya Ochiai), rebranded, without licence checks and without any Mattermost service: no
+telemetry, no Mattermost-hosted links or update feed. It works with Antimatter servers, and with Mattermost servers
+from version 9.4.
 
-![mm-desktop-screenshot](https://user-images.githubusercontent.com/52460000/146078917-e1ba8c1f-24e5-4613-8b4b-f3507422f4f2.png)
-
-[![nightly-builds](https://github.com/mattermost/desktop/actions/workflows/nightly-builds.yaml/badge.svg)](https://github.com/mattermost/desktop/actions/workflows/nightly-builds.yaml)
+- Source and issues: [github.com/AntimatterChat/desktop-app](https://github.com/AntimatterChat/desktop-app)
+- Server: [github.com/AntimatterChat/antimatter](https://github.com/AntimatterChat/antimatter)
+- Help: [antimatter.chat/help.html](https://antimatter.chat/help.html)
 
 ## Features
 
-### Desktop integration
-* Server dropdown for access to multiple servers
-* Dedicated tabs for Channels, Boards and Playbooks
-* Desktop Notifications
-* Badges for unread channels and mentions
-* Deep Linking to open Mattermost links directly in the app
-* Runs in the background to reduce the number of open windows
+* Several servers, each in its own isolated view, with a server dropdown and tabs
+* Desktop notifications, with unread and mention badges on the tray and dock icons
+* Deep links: `antimatter://` links open in the app (so do the `mattermost://` links people already have)
+* Calls and voice rooms with screen sharing, in a dedicated widget window
+* Runs in the background, with a tray icon, to reduce the number of open windows
+* Administrator policies: Windows group policies and macOS managed preferences (see `resources/windows/gpo` and
+  `resources/mac/mdm`)
 
-## Usage
+## Install
 
-### Installation
-Detailed guides are available at [docs.mattermost.com](https://docs.mattermost.com/install/desktop-app-install.html).
+Download the installer for your system from the
+[releases page](https://github.com/AntimatterChat/desktop-app/releases), run it, then enter the URL of your
+Antimatter server on the first launch (for example `https://chat.example.com`).
 
-1. Download a file from the [downloads page](https://mattermost.com/download/#mattermostApps) or from the [releases page](https://github.com/mattermost/desktop/releases).
-2. Run the installer or unzip the archive.
-3. Launch Mattermost from your Applications folder, menu, or the unarchived folder.
-4. On the first launch, please enter a name and URL for your Mattermost server. For example, `https://mattermost.example.com`.
+- **Windows**: the `.msi` installer, or the `.zip` archive.
+- **macOS**: the `.dmg` disk image (`universal`, or `arm64` for Apple silicon and `x64` for Intel Macs).
+- **Linux**: see below.
 
-### Configuration
-You can show the dialog from menu bar.
+### Linux
 
-Configuration will be saved into Electron's userData directory:
+- Debian, Ubuntu: `sudo apt install ./antimatter-desktop_<version>-1_amd64.deb`
+- Fedora, RHEL, openSUSE: `sudo dnf install ./antimatter-desktop-<version>-linux-x86_64.rpm`
+- Any distribution: the `.AppImage` (make it executable and run it), the Flatpak bundle
+  (`flatpak install antimatter-desktop-<version>-linux-x86_64.flatpak`), or the `.tar.gz` archive (extract it, then
+  run `create_desktop_file.sh` to add a launcher, as its `README.md` explains).
 
-* `%APPDATA%\Mattermost` on Windows
-* `~/Library/Application Support/Mattermost` on OS X
-* `~/.config/Mattermost` on Linux
+### Updates
 
-A custom data directory location can be specified with:
+The app checks the latest release on GitHub (the `latest.txt` file attached to it) and offers to download the new
+version. Turn it off in Settings, or for everyone with the `EnableAutoUpdater` policy.
 
-* `Mattermost.exe --args --data-dir C:\my-mattermost-data` on Windows
-* `open /Applications/Mattermost.app/ --args --data-dir ~/my-mattermost-data/` on macOS 
-* `./com.Mattermost.Desktop --args --data-dir ~/my-mattermost-data/` on Linux
+## Configuration
 
-## Custom App Deployments
-Our [docs provide a guide](https://docs.mattermost.com/deployment/desktop-app-deployment.html) on how to customize and distribute your own Mattermost Desktop App, including how to distribute the official Windows Desktop App silently to end users, pre-configured with the server URL and other app settings.
+The settings are in the app (**Settings** in the menu). They are saved in Electron's user data directory:
 
-## Development and Making Contributions
-Our [developer guide](https://developers.mattermost.com/contribute/desktop/) has detailed information on how to set up your development environment, develop, and test changes to the Desktop App.
+* `%APPDATA%\Antimatter` on Windows
+* `~/Library/Application Support/Antimatter` on macOS
+* `~/.config/Antimatter` on Linux
+
+A custom data directory can be given with `--dataDir`:
+
+* `Antimatter.exe --dataDir C:\my-antimatter-data` on Windows
+* `open /Applications/Antimatter.app --args --dataDir ~/my-antimatter-data/` on macOS
+* `chat.antimatter.desktop --dataDir ~/my-antimatter-data/` on Linux
+
+### Custom builds
+
+`src/common/config/buildConfig.ts` holds the build-time settings: servers to preconfigure, whether people can add
+servers, the help link, and the update feed.
+
+## Development
+
+Use Node.js 24 or later, then:
+
+```sh
+npm install --allow-git=all  # npm 12 and later refuse git dependencies unless allowed (one dev tool is one)
+npm run build                # development build, into dist/
+npm start                    # run it
+npm run watch                # rebuild and restart on changes
+npm run check                # lint, type check, build config check and unit tests
+npm run package:linux        # Linux packages, into release/ (also package:windows, package:mac)
+```
+
+The app's icons are rendered from `resources/brand` by `scripts/generate_icons.py` (see `src/assets/linux/ICONS.md`).
+
+## Licence
+
+Apache License 2.0, see `LICENSE.txt`; `NOTICE.txt` lists the open source components the app uses. Copyright
+Mattermost, Inc. and Yuya Ochiai for the code this app is based on, and the Antimatter contributors for their changes.

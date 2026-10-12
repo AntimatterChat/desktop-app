@@ -1,9 +1,4 @@
-<!-- Thank you for contributing a pull request! Here are a few tips to help you:
-
-1. If this is your first contribution, make sure you've read the Contribution Checklist https://developers.mattermost.com/contribute/getting-started/contribution-checklist/
-2. Read our blog post about "Submitting Great PRs" https://developers.mattermost.com/blog/2019-01-24-submitting-great-prs
-3. Take a look at other repository specific documentation at https://developers.mattermost.com/contribute
--->
+<!-- Thank you for contributing a pull request! Please read CONTRIBUTING.md first. -->
 
 #### Summary
 <!--
@@ -12,11 +7,9 @@ A brief description of what this pull request does.
 
 #### Ticket Link
 <!--
-If this pull request addresses a Help Wanted ticket, please link the relevant GitHub issue, e.g.
+If this pull request addresses an issue, please link it, e.g.
 
-  Fixes https://github.com/mattermost/desktop/issues/XXXXX
-
-Otherwise, link the JIRA ticket.
+  Fixes https://github.com/AntimatterChat/desktop-app/issues/XXXXX
 -->
 
 #### Checklist
@@ -25,8 +18,7 @@ Place an '[x]' (no spaces) in all applicable fields. Please remove unrelated fie
 -->
 - [ ] Added or updated unit tests (required for all new features)
 - [ ] Has UI changes
-- [ ] read and understood our [Contributing Guidelines](https://github.com/mattermost/desktop/blob/master/CONTRIBUTING.md)
-- [ ] completed [Mattermost Contributor Agreement](https://mattermost.com/contribute/)
+- [ ] read and understood our [Contributing Guidelines](https://github.com/AntimatterChat/desktop-app/blob/main/CONTRIBUTING.md)
 - [ ] executed `npm run lint:js` for proper code formatting
 - [ ] Run E2E tests by adding label `E2E/Run`
 

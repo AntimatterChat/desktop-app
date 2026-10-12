@@ -1,10 +1,10 @@
-# AGENTS.md — Mattermost Desktop App
+# AGENTS.md — Antimatter Desktop App
 
 ## Project overview
 
-Electron application wrapping the Mattermost Web App for a native desktop experience, enabling some additional features for end-users and admins. Supports multiple simultaneous Mattermost server connections, each in its own isolated process.
+Electron application wrapping the Antimatter (or Mattermost) web app for a native desktop experience, enabling some additional features for end-users and admins. Supports multiple simultaneous server connections, each in its own isolated process. It is a fork of the Mattermost Desktop App, rebranded and without licence checks or Mattermost services.
 
-Repository: https://github.com/mattermost/desktop
+Repository: https://github.com/AntimatterChat/desktop-app
 
 ## Architecture
 
@@ -15,7 +15,7 @@ Repository: https://github.com/mattermost/desktop
   - `src/app/` — High-level app modules: windows, tabs, modals, menus, and Calls integration.
   - `src/common/` — Shared modules: configuration, server/view management, logging, IPC constants, utilities.
 - **Renderer processes** (`src/renderer/`): Chromium instances for the app's internal UI (top bar, settings, modals). React-based.
-- **External views**: Each Mattermost server runs in its own `WebContentsView`, loading the web app directly from that server.
+- **External views**: Each server runs in its own `WebContentsView`, loading the web app directly from that server.
 - **Preload scripts** (`src/app/preload/`): Bridge between main and renderer via `contextBridge`:
   - `internalAPI.js` → `window.desktop` (full API for trusted internal views)
   - `externalAPI.ts` → `window.desktopAPI` (restricted API for external server views)
@@ -105,7 +105,7 @@ Each UI surface (modal, dropdown, screen) needs an entry in `webpack.config.rend
 
 ### electron-builder
 
-Configured in `electron-builder.json`. Output to `release/`.
+Configured in `electron-builder.ts`. Output to `release/`.
 
 - **Lifecycle hooks**: `scripts/beforepack.js` (output dirs), `scripts/afterpack.js` (Electron fuses, Linux sandbox permissions)
 - **Windows**: zip + MSI (x64, ARM64). Azure code signing. GPO templates bundled.
@@ -114,7 +114,7 @@ Configured in `electron-builder.json`. Output to `release/`.
 
 ### Native Node modules
 
-Native modules extend OS-specific functionality for features like Do Not Disturb detection or Windows registry access. Most target a single OS, and implement system-level calls in C++ and expose those to Node. When adding one, it must be declared as a webpack external in `webpack.config.main.js`, included in `electron-builder.json` (`files` and `asarUnpack`), and may need a patch to no-op on other platforms so the app doesn't crash. Always test builds on all platforms after adding one.
+Native modules extend OS-specific functionality for features like Do Not Disturb detection or Windows registry access. Most target a single OS, and implement system-level calls in C++ and expose those to Node. When adding one, it must be declared as a webpack external in `webpack.config.main.js`, included in `electron-builder.ts` (`files` and `asarUnpack`), and may need a patch to no-op on other platforms so the app doesn't crash. Always test builds on all platforms after adding one.
 
 ### Patches (`patches/`)
 
@@ -127,7 +127,8 @@ Applied via `patch-package` during `postinstall`. Used when we need to change th
 | `scripts/watch.js` | Dev mode with auto-rebuild and Electron restart |
 | `scripts/afterpack.js` | Electron fuses and Linux sandbox permissions |
 | `scripts/release.sh` | Release tagging (`start`, `rc`, `pre-final`, `final`, `patch`) |
-| `scripts/generate_latest_version.sh` | Generates `latest.json` for auto-updater |
+| `scripts/generate_latest_version.sh` | Generates the version file the update notifier reads (`latest.txt`, attached to the GitHub release) |
+| `scripts/generate_icons.py` | Renders every icon from the SVG sources in `resources/brand` |
 
 ## CI/CD (GitHub Actions)
 
@@ -135,7 +136,7 @@ Applied via `patch-package` during `postinstall`. Used when we need to change th
 |---|---|---|
 | `ci.yaml` | Every PR | Build all platforms, lint, type check, unit tests |
 | `build-for-pr.yml` | `Build Apps for PR` label | Full signed builds for manual testing |
-| `release.yaml` | Push of `v*` tag | Full release: build, sign, S3 upload, draft GitHub Release |
+| `release.yaml` | Push of `v*` tag | Full release: build, sign, draft GitHub Release with `latest.txt` |
 | `release-mas.yaml` | Push of `v*-rc.*` or `v*-mas.*` tag | Mac App Store release build |
 | `nightly-builds.yaml` | Cron (daily, Mon-Sat 4 AM UTC) | Nightly build + QA |
 
