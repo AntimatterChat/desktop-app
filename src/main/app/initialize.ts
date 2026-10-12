@@ -215,6 +215,14 @@ function initializeBeforeAppReady() {
 
     Tray.refreshImages(Config.trayIconTheme);
 
+    app.setAboutPanelOptions({
+        applicationName: app.name,
+        applicationVersion: app.getVersion(),
+        copyright: 'Antimatter contributors. Based on the Mattermost Desktop App, © Mattermost, Inc.',
+        website: 'https://antimatter.chat',
+        iconPath: path.join(app.getAppPath() ?? '', 'assets', 'linux', 'app_icon.png'),
+    });
+
     // E2E tests intentionally launch multiple Electron instances in parallel.
     // Skip the single-instance lock in test mode so secondary workers do not exit during startup.
     // If there is already an instance, quit this one
