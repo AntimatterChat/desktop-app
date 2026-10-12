@@ -1,0 +1,47 @@
+// Light mode colours by default, dark mode ones under .darkMode (set on the body)
+.Logo {
+    --logo-matter: #6d28d9;
+    --logo-anti: #0891b2;
+    --logo-spark: #f59e0b;
+    --logo-text: #1b1238;
+    --logo-antiparticle: #ffffff;
+
+    .darkMode & {
+        --logo-matter: #a78bfa;
+        --logo-anti: #22d3ee;
+        --logo-spark: #fbbf24;
+        --logo-text: #ffffff;
+        --logo-antiparticle: var(--center-channel-bg);
+    }
+
+    &__matter-stroke {
+        fill: none;
+        stroke: var(--logo-matter);
+    }
+
+    &__anti-stroke {
+        fill: none;
+        stroke: var(--logo-anti);
+    }
+
+    &__matter-fill {
+        fill: var(--logo-matter);
+    }
+
+    &__antiparticle {
+        fill: var(--logo-antiparticle);
+        stroke: var(--logo-anti);
+    }
+
+    &__spark {
+        fill: var(--logo-spark);
+    }
+
+    &__anti-fill {
+        fill: var(--logo-anti);
+    }
+
+    &__text {
+        fill: var(--logo-text);
+    }
+}

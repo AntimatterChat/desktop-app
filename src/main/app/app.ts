@@ -142,7 +142,7 @@ export async function handleAppCertificateError(event: Event, webContents: WebCo
         try {
             let result = await MessageModal.showMessageModal({
                 title: localizeMessage('main.app.app.handleAppCertificateError.certError.dialog.title', 'Certificate Error'),
-                message: localizeMessage('main.app.app.handleAppCertificateError.certError.dialog.message', 'There is a problem with the security certificate for this server or for embedded content in a message. Please contact your Mattermost admin or IT department to resolve this issue.'),
+                message: localizeMessage('main.app.app.handleAppCertificateError.certError.dialog.message', 'There is a problem with the security certificate for this server or for embedded content in a message. Please contact your Antimatter admin or IT department to resolve this issue.'),
                 type: 'error',
                 detail,
                 buttons: [

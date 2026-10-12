@@ -210,12 +210,12 @@ button {
 
         // These hover and active values are for things outside the app__body, the correct theme styles for the primary button are applied in utils.jsx
         &:hover {
-            background-color: #1a51c8;
+            background: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08)), rgb(var(--button-bg-rgb));
         }
 
         &:active,
         &:focus {
-            background-color: #184ab6;
+            background: linear-gradient(rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.16)), rgb(var(--button-bg-rgb));
         }
 
         &:disabled,

@@ -45,7 +45,7 @@ function WelcomeScreen({
             subtitle: (
                 <FormattedMessage
                     id='renderer.components.welcomeScreen.slides.welcome.subtitle'
-                    defaultMessage='Mattermost is a sovereign collaboration platform built for operational environments and uncompromising security.'
+                    defaultMessage='Antimatter is a free, open source team chat you host yourself: channels and threads, calls, collaborative apps and AI, all on your own server.'
                 />
             ),
             image: (
@@ -64,7 +64,7 @@ function WelcomeScreen({
             subtitle: (
                 <FormattedMessage
                     id='renderer.components.welcomeScreen.slides.collaborate.subtitle'
-                    defaultMessage='Coordinate across teams with persistent mission channels, secure file sharing, and automated workflows.'
+                    defaultMessage='Channels, threads, direct messages and file sharing keep everyone on the same page, in every team.'
                 />
             ),
             image: (
@@ -76,13 +76,13 @@ function WelcomeScreen({
             title: (
                 <FormattedMessage
                     id='renderer.components.welcomeScreen.slides.calls.title'
-                    defaultMessage='Start secure calls instantly'
+                    defaultMessage='Start calls instantly'
                 />
             ),
             subtitle: (
                 <FormattedMessage
                     id='renderer.components.welcomeScreen.slides.calls.subtitle'
-                    defaultMessage='Seamlessly move from chat to audio calls and screen sharing without switching tools or losing context.'
+                    defaultMessage='Move from chat to a voice room or a call with screen sharing, without switching tools or losing context.'
                 />
             ),
             image: (
@@ -94,13 +94,13 @@ function WelcomeScreen({
             title: (
                 <FormattedMessage
                     id='renderer.components.welcomeScreen.slides.integrate.title'
-                    defaultMessage='Integrate with your systems'
+                    defaultMessage='Bring your tools along'
                 />
             ),
             subtitle: (
                 <FormattedMessage
                     id='renderer.components.welcomeScreen.slides.integrate.subtitle'
-                    defaultMessage='Centralize data feeds, automate alerts, and integrate custom tooling directly into your operational hub.'
+                    defaultMessage='Notes, whiteboards, boards, polls, bots and integrations with the tools you already use, every feature free.'
                 />
             ),
             image: (

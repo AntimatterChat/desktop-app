@@ -1,7 +1,7 @@
 :root {
     /* colors used but not themed */
-    --indigo-400: #28427B;
-    --indigo-300: #32539A;
+    --indigo-400: #5B21B6;
+    --indigo-300: #6D28D9;
     --sand: #CCC4AE;
     --neutral-0: #FFFFFF;
     --neutral-1200: #090A0B;
@@ -30,15 +30,15 @@
     --border-light: solid 1px rgba(var(--center-channel-color-rgb), 0.08);
     --border-dark: solid 1px rgba(var(--center-channel-color-rgb), 0.16);
 
-    /* Denim - used for light mode */
+    /* Denim with Antimatter's violet buttons and links - used for light mode, until a server's theme applies */
     --away-indicator-rgb: 255, 188, 31;
-    --button-bg-rgb: 28, 88, 217;
+    --button-bg-rgb: 109, 40, 217;
     --button-color-rgb: 255, 255, 255;
     --center-channel-bg-rgb: 255, 255, 255;
     --center-channel-color-rgb: 63, 67, 80;
     --dnd-indicator-rgb: 210, 75, 78;
     --error-text-color-rgb: 210, 75, 78;
-    --link-color-rgb: #386fe5;
+    --link-color-rgb: 109, 40, 217;
     --mention-bg-rgb: 255, 255, 255;
     --mention-color-rgb: 30, 50, 92;
     --mention-highlight-bg-rgb: 255, 212, 112;
@@ -74,8 +74,8 @@
     --center-channel-bg: #ffffff;
     --center-channel-color: #3f4350;
     --new-message-separator: #cc8f00;
-    --link-color: #386fe5;
-    --button-bg: #1c58d9;
+    --link-color: #6d28d9;
+    --button-bg: #6d28d9;
     --button-color: #ffffff;
     --error-text: #d24b4e;
     --mention-highlight-bg: #ffd470;
@@ -83,15 +83,15 @@
 }
 
 .darkMode {
-    /* Onyx - used for dark mode*/
+    /* Onyx with Antimatter's violet buttons and links - used for dark mode, until a server's theme applies */
     --away-indicator-rgb: 245, 171, 0;
-    --button-bg-rgb: 74, 124, 232;
+    --button-bg-rgb: 124, 58, 237;
     --button-color-rgb: 255, 255, 255;
     --center-channel-bg-rgb: 25, 27, 31;
     --center-channel-color-rgb: 227, 228, 232;
     --dnd-indicator-rgb: 210, 75, 78;
     --error-text-color-rgb: 218, 108, 110;
-    --link-color-rgb: #5d89ea;
+    --link-color-rgb: 167, 139, 250;
     --mention-bg-rgb: 75, 124, 231;
     --mention-color-rgb: 255, 255, 255;
     --mention-highlight-bg-rgb: 13, 110, 110;
@@ -127,8 +127,8 @@
     --center-channel-bg: #191b1f;
     --center-channel-color: #e3e4e8;
     --new-message-separator: #1adbdb;
-    --link-color: #5d89ea;
-    --button-bg: #4a7ce8;
+    --link-color: #a78bfa;
+    --button-bg: #7c3aed;
     --button-color: #ffffff;
     --error-text: #da6c6e;
     --mention-highlight-bg: #0d6e6e;

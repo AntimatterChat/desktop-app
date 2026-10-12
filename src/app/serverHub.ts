@@ -378,7 +378,8 @@ export class ServerHub {
             };
         }
 
-        const remoteServerName = remoteInfo.siteName === 'Mattermost' ? remoteURL.host.split('.')[0] : remoteInfo.siteName;
+        // A server keeping the default site name is named after its host instead
+        const remoteServerName = (!remoteInfo.siteName || ['Antimatter', 'Mattermost'].includes(remoteInfo.siteName)) ? remoteURL.host.split('.')[0] : remoteInfo.siteName;
 
         // If we were only able to connect via HTTP, warn the user that the connection is not secure
         if (remoteURL.protocol === 'http:') {
