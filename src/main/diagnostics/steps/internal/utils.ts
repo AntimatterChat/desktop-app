@@ -60,6 +60,28 @@ export function truncateString(str: string, maxLength = LOGS_MAX_STRING_LENGTH):
     return str;
 }
 
+/**
+ * Checks that the computer can reach the internet: any HTTP answer from the endpoint will do.
+ */
+export async function canReachInternet(logger: MainLogger = log, url = IS_ONLINE_ENDPOINT): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+        const request = https.request(url, {method: 'HEAD', timeout: 10000}, (resp) => {
+            logger.debug('canReachInternet', {url, statusCode: resp.statusCode});
+            resp.resume();
+            resolve(true);
+        });
+        request.on('timeout', () => request.destroy(new Error('Timed out')));
+        request.on('error', (err) => {
+            logger.error('diagnostics canReachInternet Error', {err});
+            resolve(false);
+        });
+        request.end();
+    });
+}
+
+/**
+ * Checks that an Antimatter server answers its ping endpoint.
+ */
 export async function isOnline(logger: MainLogger = log, url = IS_ONLINE_ENDPOINT): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
         https.get(url, (resp) => {

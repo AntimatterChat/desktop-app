@@ -5,7 +5,7 @@ import type {MainLogger} from 'electron-log';
 
 import type {DiagnosticStepResponse} from 'types/diagnostics';
 
-import {isOnline} from './internal/utils';
+import {canReachInternet} from './internal/utils';
 
 import DiagnosticsStep from '../DiagnosticStep';
 
@@ -14,7 +14,7 @@ const stepDescriptiveName = 'internetConnection';
 
 const run = async (logger: MainLogger): Promise<DiagnosticStepResponse> => {
     try {
-        const success = await isOnline(logger);
+        const success = await canReachInternet(logger);
         if (success) {
             return {
                 message: `${stepName} finished successfully`,
