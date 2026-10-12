@@ -4,9 +4,7 @@
 
 import type {BuildConfig} from 'types/config';
 
-import {DEFAULT_ACADEMY_LINK, DEFAULT_HELP_LINK, DEFAULT_UPGRADE_LINK} from '../../common/constants';
-
-// For detailed guides, please refer to https://docs.mattermost.com/deployment/desktop-app-deployment.html
+import {DEFAULT_HELP_LINK, DEFAULT_UPGRADE_LINK} from '../../common/constants';
 
 /**
  * Build-time configuration. End-users can't change these parameters.
@@ -14,7 +12,7 @@ import {DEFAULT_ACADEMY_LINK, DEFAULT_HELP_LINK, DEFAULT_UPGRADE_LINK} from '../
  * @prop {string} defaultServers[].name - The view name for default server.
  * @prop {string} defaultServers[].url - The URL for default server.
  * @prop {string} defaultServers[].order - Sort order for server views (0, 1, 2)
- * @prop {string} helpLink - The URL for "Help->Learn More..." menu item.
+ * @prop {string} helpLink - The URL for the "Help->User guide" menu item, when the server doesn't set one.
  *                           If null is specified, the menu disappears.
  * @prop {boolean} enableServerManagement - Whether users can edit servers configuration.
  *                                          Specify at least one server for "defaultServers"
@@ -31,7 +29,6 @@ const buildConfig: BuildConfig = {
     }
   */],
     helpLink: DEFAULT_HELP_LINK,
-    academyLink: DEFAULT_ACADEMY_LINK,
     upgradeLink: DEFAULT_UPGRADE_LINK,
     enableServerManagement: true,
     enableUpdateNotifications: true,

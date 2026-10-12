@@ -39,7 +39,6 @@ jest.mock('main/i18nManager', () => ({
 jest.mock('common/config', () => ({
     canUpgrade: false,
     helpLink: 'http://link-to-help.site.com',
-    academyLink: 'http://academy.site.com',
 }));
 
 jest.mock('common/servers/serverManager', () => ({
@@ -80,7 +79,6 @@ describe('app/menus/appMenu/help', () => {
         ServerManager.getRemoteInfo.mockReturnValue({
             helpLink: 'http://server-help.com',
             reportProblemLink: 'http://server-report.com',
-            licenseSku: 'professional',
             serverVersion: '7.0.0',
         });
         Config.canUpgrade = false;
@@ -203,31 +201,6 @@ describe('app/menus/appMenu/help', () => {
             }
         });
 
-        it('should show academy link when available', () => {
-            localizeMessage.mockImplementation((id) => {
-                if (id === 'main.menus.app.help.academy') {
-                    return 'Mattermost Academy';
-                }
-                return id;
-            });
-            const menu = createHelpMenu();
-            const academyItem = menu.submenu.find((item) => item.label === 'Mattermost Academy');
-            expect(academyItem).not.toBe(undefined);
-        });
-
-        it('should call shell.openExternal with academy link when academy is clicked', () => {
-            localizeMessage.mockImplementation((id) => {
-                if (id === 'main.menus.app.help.academy') {
-                    return 'Mattermost Academy';
-                }
-                return id;
-            });
-            const menu = createHelpMenu();
-            const academyItem = menu.submenu.find((item) => item.label === 'Mattermost Academy');
-            academyItem.click();
-            expect(shell.openExternal).toHaveBeenCalledWith('http://academy.site.com');
-        });
-
         it('should show logs option', () => {
             localizeMessage.mockImplementation((id) => {
                 if (id === 'main.menus.app.help.ShowLogs') {
@@ -278,10 +251,8 @@ describe('app/menus/appMenu/help', () => {
             expect(shell.openExternal).toHaveBeenCalledWith('http://server-report.com');
         });
 
-        it('should use default report problem link for enterprise license', () => {
-            ServerManager.getRemoteInfo.mockReturnValue({
-                licenseSku: 'enterprise',
-            });
+        it('should use the default report problem link when the server has none', () => {
+            ServerManager.getRemoteInfo.mockReturnValue({});
             localizeMessage.mockImplementation((id) => {
                 if (id === 'main.menus.app.help.reportProblem') {
                     return 'Report a problem';
@@ -291,23 +262,7 @@ describe('app/menus/appMenu/help', () => {
             const menu = createHelpMenu();
             const reportProblemItem = menu.submenu.find((item) => item.label === 'Report a problem');
             reportProblemItem.click();
-            expect(shell.openExternal).toHaveBeenCalledWith('https://support.mattermost.com/hc/en-us/requests/new');
-        });
-
-        it('should use default report problem link for team edition', () => {
-            ServerManager.getRemoteInfo.mockReturnValue({
-                licenseSku: 'team',
-            });
-            localizeMessage.mockImplementation((id) => {
-                if (id === 'main.menus.app.help.reportProblem') {
-                    return 'Report a problem';
-                }
-                return id;
-            });
-            const menu = createHelpMenu();
-            const reportProblemItem = menu.submenu.find((item) => item.label === 'Report a problem');
-            reportProblemItem.click();
-            expect(shell.openExternal).toHaveBeenCalledWith('https://mattermost.com/pl/report-a-bug');
+            expect(shell.openExternal).toHaveBeenCalledWith('https://antimatter.chat/help.html#report');
         });
 
         describe('should only show report problem link if the link is a valid http or https URL', () => {

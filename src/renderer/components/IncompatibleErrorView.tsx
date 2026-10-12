@@ -37,8 +37,8 @@ export default function IncompatibleErrorView({appName, url, handleLink, handleU
         <>
             <li>
                 <FormattedMessage
-                    id='renderer.components.errorView.troubleshooting.downgradeApp'
-                    defaultMessage='<link>Downgrade your {appName} Desktop App</link> to version v5.10 or earlier.'
+                    id='renderer.components.errorView.troubleshooting.upgradeServer'
+                    defaultMessage='<link>Upgrade the server</link> to {appName}, or to Mattermost Server v9.4 or later.'
                     values={{
                         appName,
                         link: (msg: React.ReactNode) => (

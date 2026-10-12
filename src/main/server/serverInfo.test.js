@@ -83,8 +83,6 @@ describe('main/server/serverInfo', () => {
                     success(JSON.stringify([{name: 'test', type: 'string', ttl_seconds: 30, grace_period_seconds: 60, platforms: ['desktop']}]));
                 } else if (url.toString() === 'http://someurl.com/api/v4/plugins/webapp') {
                     success(JSON.stringify([]));
-                } else if (url.toString() === 'http://someurl.com/api/v4/license/client?format=old') {
-                    success(JSON.stringify({SkuShortName: 'professional'}));
                 } else {
                     success(JSON.stringify({}));
                 }
@@ -102,14 +100,26 @@ describe('main/server/serverInfo', () => {
                     success(JSON.stringify(manifest));
                 } else if (url.toString() === 'http://someurl.com/api/v4/plugins/webapp') {
                     success(JSON.stringify([]));
-                } else if (url.toString() === 'http://someurl.com/api/v4/license/client?format=old') {
-                    success(JSON.stringify({SkuShortName: 'professional'}));
                 } else {
                     success(JSON.stringify({}));
                 }
             });
             await serverInfo.fetchRemoteInfo();
             expect(serverInfo.remoteInfo.sessionAttributesManifest).toEqual(manifest);
+        });
+
+        it('should not depend on the licence', async () => {
+            getServerAPI.mockImplementation((url, auth, success) => {
+                if (url.toString() === 'http://someurl.com/api/v4/config/client?format=old') {
+                    success(JSON.stringify({Version: '12.0.0', FeatureFlagSessionAttributes: 'false'}));
+                } else {
+                    success(JSON.stringify([]));
+                }
+            });
+            await serverInfo.fetchRemoteInfo();
+            const requested = getServerAPI.mock.calls.map(([url]) => url.toString());
+            expect(requested.some((url) => url.includes('/api/v4/license'))).toBe(false);
+            expect(serverInfo.remoteInfo.serverVersion).toBe('12.0.0');
         });
     });
 });

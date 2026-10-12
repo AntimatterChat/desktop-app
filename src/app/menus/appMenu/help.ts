@@ -5,7 +5,7 @@ import {shell, app, clipboard, type MenuItemConstructorOptions} from 'electron';
 import {transports} from 'electron-log';
 
 import Config from 'common/config';
-import {DEFAULT_EE_REPORT_PROBLEM_LINK, DEFAULT_TE_REPORT_PROBLEM_LINK} from 'common/constants';
+import {DEFAULT_REPORT_PROBLEM_LINK} from 'common/constants';
 import {Logger} from 'common/log';
 import ServerManager from 'common/servers/serverManager';
 import {isHttpLink} from 'common/utils/url';
@@ -41,17 +41,6 @@ export default function createHelpMenu(): MenuItemConstructorOptions {
     } else if (helpLink) {
         log.debug('createHelpMenu', 'not rendering user guide link, link is invalid');
     }
-    const academyLink = Config.academyLink;
-    if (isHttpLink(academyLink)) {
-        submenu.push({
-            label: localizeMessage('main.menus.app.help.academy', 'Mattermost Academy'),
-            click() {
-                shell.openExternal(academyLink);
-            },
-        });
-    } else if (academyLink) {
-        log.debug('createHelpMenu', 'not rendering academy link, link is invalid');
-    }
     submenu.push({type: 'separator'});
 
     submenu.push({
@@ -70,23 +59,12 @@ export default function createHelpMenu(): MenuItemConstructorOptions {
         },
     });
 
-    let reportProblemLink = currentRemoteInfo?.reportProblemLink;
-    if (!reportProblemLink) {
-        switch (currentRemoteInfo?.licenseSku) {
-        case 'enterprise':
-        case 'professional':
-            reportProblemLink = DEFAULT_EE_REPORT_PROBLEM_LINK;
-            break;
-        default:
-            reportProblemLink = DEFAULT_TE_REPORT_PROBLEM_LINK;
-            break;
-        }
-    }
+    const reportProblemLink = currentRemoteInfo?.reportProblemLink || DEFAULT_REPORT_PROBLEM_LINK;
     if (isHttpLink(reportProblemLink)) {
         submenu.push({
             label: localizeMessage('main.menus.app.help.reportProblem', 'Report a problem'),
             click() {
-                shell.openExternal(reportProblemLink!);
+                shell.openExternal(reportProblemLink);
             },
         });
     } else if (reportProblemLink) {

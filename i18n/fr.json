@@ -85,7 +85,6 @@
   "main.menus.app.help": "Aide",
   "main.menus.app.help.RunDiagnostics": "Exécuter des diagnostics",
   "main.menus.app.help.ShowLogs": "Afficher les logs",
-  "main.menus.app.help.academy": "Académie Mattermost",
   "main.menus.app.help.checkForUpdates": "Vérifier les mises à jour",
   "main.menus.app.help.commitString": " commit : {hashVersion}",
   "main.menus.app.help.downloadUpdate": "Télécharger la mise à jour",

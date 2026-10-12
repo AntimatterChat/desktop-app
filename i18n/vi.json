@@ -81,7 +81,6 @@
   "main.menus.app.help": "Trợ giúp",
   "main.menus.app.help.RunDiagnostics": "Chạy chẩn đoán",
   "main.menus.app.help.ShowLogs": "Xem log",
-  "main.menus.app.help.academy": "Học viện Mattermost",
   "main.menus.app.help.checkForUpdates": "Kiểm tra cập nhật mới",
   "main.menus.app.help.commitString": " commit: {hashVersion}",
   "main.menus.app.help.downloadUpdate": "Tải bản cập nhật",

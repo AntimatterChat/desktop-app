@@ -90,7 +90,6 @@
   "main.menus.app.help": "Sú&gó",
   "main.menus.app.help.RunDiagnostics": "Diagnosztikák futtatása",
   "main.menus.app.help.ShowLogs": "Naplózás megjelenítése",
-  "main.menus.app.help.academy": "Mattermost Akadémia",
   "main.menus.app.help.checkForUpdates": "Frissítések ellenőrzése",
   "main.menus.app.help.commitString": " commit: {hashVersion}",
   "main.menus.app.help.downloadUpdate": "Frissítés letöltése",

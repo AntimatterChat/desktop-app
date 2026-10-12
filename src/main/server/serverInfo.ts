@@ -44,10 +44,6 @@ export class ServerInfo {
             this.onGetPlugins,
             parseURL(`${this.server.url}/api/v4/plugins/webapp`),
         );
-        await this.getRemoteInfo<{SkuShortName: string}>(
-            this.onGetLicense,
-            parseURL(`${this.server.url}/api/v4/license/client?format=old`),
-        );
         if (this.remoteInfo.sessionAttributesEnabled) {
             await this.getRemoteInfo<SAField[]>(
                 this.onGetSessionAttributesManifest,
@@ -100,14 +96,9 @@ export class ServerInfo {
         this.remoteInfo.reportProblemLink = data.ReportAProblemLink;
     };
 
-    private onGetLicense = (data: {SkuShortName: string}) => {
-        this.remoteInfo.licenseSku = data.SkuShortName;
-    };
-
     private onGetPlugins = (data: Array<{id: string; version: string}>) => {
         this.remoteInfo.hasFocalboard = this.remoteInfo.hasFocalboard || data.some((plugin) => plugin.id === 'focalboard');
         this.remoteInfo.hasPlaybooks = data.some((plugin) => plugin.id === 'playbooks');
-        this.remoteInfo.hasUserSurvey = data.some((plugin) => plugin.id === 'com.mattermost.nps');
     };
 
     private onGetSessionAttributesManifest = (data: SAField[]) => {

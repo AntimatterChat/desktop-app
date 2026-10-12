@@ -7,12 +7,10 @@ export type RemoteInfo = {
     serverVersion?: string;
     siteName?: string;
     siteURL?: string;
-    licenseSku?: string;
     helpLink?: string;
     reportProblemLink?: string;
     hasFocalboard?: boolean;
     hasPlaybooks?: boolean;
-    hasUserSurvey?: boolean;
     sessionAttributesEnabled?: boolean;
     sessionAttributesManifest?: SAField[];
 };
