@@ -9,7 +9,8 @@ It is a fork of the [Mattermost Desktop App](https://github.com/mattermost/deskt
 telemetry, no Mattermost-hosted links or update feed. It works with Antimatter servers, and with Mattermost servers
 from version 9.4.
 
-- Source and issues: [github.com/AntimatterChat/desktop-app](https://github.com/AntimatterChat/desktop-app)
+- Source: [github.com/AntimatterChat/desktop-app](https://github.com/AntimatterChat/desktop-app)
+- Bug reports, feature requests and questions: [AntimatterChat/community](https://github.com/AntimatterChat/community)
 - Server: [github.com/AntimatterChat/antimatter](https://github.com/AntimatterChat/antimatter)
 - Help: [antimatter.chat/help.html](https://antimatter.chat/help.html)
 
@@ -79,6 +80,16 @@ npm run package:linux        # Linux packages, into release/ (also package:windo
 ```
 
 The app's icons are rendered from `resources/brand` by `scripts/generate_icons.py` (see `src/assets/linux/ICONS.md`).
+
+## Feedback and support
+
+Found a bug in the desktop app, or missing a feature? Please [open an
+issue](https://github.com/AntimatterChat/community/issues/new/choose) in the [Antimatter community
+repository](https://github.com/AntimatterChat/community), where the feedback for every part of
+Antimatter is gathered. Questions and ideas are welcome in its
+[Discussions](https://github.com/AntimatterChat/community/discussions). Please report security
+problems privately, as explained in the [security
+policy](https://github.com/AntimatterChat/.github/blob/main/SECURITY.md).
 
 ## Licence
 
