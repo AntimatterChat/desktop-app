@@ -236,4 +236,17 @@ if (process.env.CI_MAC_ZIP_ONLY) {
     config.mac.gatekeeperAssess = false;
 }
 
+// Builds without an Apple certificate (the release workflow): sign ad hoc, because Apple silicon refuses to run
+// unsigned code, and leave out notarisation, the hardened runtime and the entitlements that need a provisioning
+// profile (macOS kills an ad hoc signed app that claims them).
+if (process.env.AM_MAC_ADHOC_SIGN === 'true') {
+    Object.assign(config.mac, {
+        identity: '-',
+        notarize: false,
+        hardenedRuntime: false,
+        gatekeeperAssess: false,
+        entitlements: './resources/mac/entitlements.mac.adhoc.plist',
+    });
+}
+
 module.exports = config;
