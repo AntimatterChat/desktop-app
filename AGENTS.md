@@ -136,9 +136,9 @@ Applied via `patch-package` during `postinstall`. Used when we need to change th
 |---|---|---|
 | `ci.yaml` | Every PR | Build all platforms, lint, type check, unit tests |
 | `build-for-pr.yml` | `Build Apps for PR` label | Full signed builds for manual testing |
-| `release.yaml` | Push of `v*` tag | Full release: build, sign, draft GitHub Release with `latest.txt` |
-| `release-mas.yaml` | Push of `v*-rc.*` or `v*-mas.*` tag | Mac App Store release build |
-| `nightly-builds.yaml` | Cron (daily, Mon-Sat 4 AM UTC) | Nightly build + QA |
+| `release.yml` | Push of `v*` tag, or by hand | Unsigned builds for Linux (deb, rpm, AppImage, flatpak, tar.gz; x64, arm64), Windows (NSIS, MSI, zip; x64, arm64) and macOS (dmg, zip; arm64, x64, universal, ad hoc signed); publishes the GitHub release of the tag with `SHA256SUMS` and `latest.txt` (by hand: workflow artifacts, optionally a draft prerelease) |
+| `release-mas.yaml` | Push of `v*-rc.*` or `v*-mas.*` tag | Mac App Store release build (Mattermost's repository only) |
+| `nightly-builds.yaml` | Cron (daily, Mon-Sat 4 AM UTC) | Nightly build + QA (Mattermost's repository only) |
 
 Release flow: `release-X.Y` branch → `release.sh start` (first RC) → push tag → iterate with `release.sh rc` → `release.sh pre-final` (MAS) → `release.sh final` (GA).
 

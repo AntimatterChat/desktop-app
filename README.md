@@ -31,9 +31,15 @@ Download the installer for your system from the
 [releases page](https://github.com/AntimatterChat/desktop-app/releases), run it, then enter the URL of your
 Antimatter server on the first launch (for example `https://chat.example.com`).
 
-- **Windows**: the `.msi` installer, or the `.zip` archive.
-- **macOS**: the `.dmg` disk image (`universal`, or `arm64` for Apple silicon and `x64` for Intel Macs).
-- **Linux**: see below.
+- **Windows** (x64 and arm64): the `.msi` installer (for all users), the `.exe` installer (for your account only), or
+  the `.zip` archive.
+- **macOS**: the `.dmg` disk image (`universal`, or `arm64` for Apple silicon and `x64` for Intel Macs), or the `.zip`.
+- **Linux** (x64 and arm64): see below.
+
+The builds are **not signed** yet. On Windows, SmartScreen warns about an unknown publisher: choose **More info**,
+then **Run anyway**. On macOS the app is signed ad hoc but not notarised: open it the first time with a right-click
+(or Control-click) on the app, then **Open**, or run `xattr -dr com.apple.quarantine /Applications/Antimatter.app`.
+Every release has a `SHA256SUMS` file to check the downloads against (`sha256sum -c SHA256SUMS --ignore-missing`).
 
 ### Linux
 
@@ -79,6 +85,13 @@ npm run watch                # rebuild and restart on changes
 npm run check                # lint, type check, build config check and unit tests
 npm run package:linux        # Linux packages, into release/ (also package:windows, package:mac)
 ```
+
+### Releases
+
+The [release workflow](.github/workflows/release.yml) builds every package on GitHub's runners: pushing a tag
+`v<version>` (e.g. `v1.2.0`, or `v1.2.0-rc.1` for a prerelease) publishes them on the GitHub release of that tag, with
+`SHA256SUMS` and the `latest.txt` file the app checks for updates. Run by hand from the Actions tab, it builds
+everything and keeps the files as workflow artifacts (and, if asked, as a draft prerelease).
 
 The app's icons are rendered from `resources/brand` by `scripts/generate_icons.py` (see `src/assets/linux/ICONS.md`).
 

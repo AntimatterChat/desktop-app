@@ -1,0 +1,323 @@
+# Builds the Antimatter desktop app for Linux, Windows and macOS on GitHub's hosted runners.
+#
+# - A pushed tag v<version> (e.g. v1.2.0, v1.2.0-rc.1) builds every package and publishes them on the GitHub release
+#   of the tag, with SHA256SUMS and (for a stable version) the latest.txt file the app checks for updates. Tags with a
+#   "-" are marked as prereleases.
+# - Run by hand (workflow_dispatch), it builds everything and keeps the files as workflow artifacts; tick
+#   "draft-prerelease" to also save them as a draft prerelease.
+#
+# The builds are not signed or notarised: no certificate or Mattermost secret is needed. The macOS app is signed ad
+# hoc (Apple silicon refuses to run unsigned code), see AM_MAC_ADHOC_SIGN in electron-builder.ts.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (default: the version in package.json with -dev.<run number>)"
+        required: false
+        type: string
+      draft-prerelease:
+        description: "Also save the builds as a draft prerelease"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TERM: xterm
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+  # Don't look for signing certificates in the keychain or the environment
+  CSC_IDENTITY_AUTO_DISCOVERY: "false"
+  # The flatpak runtime version electron-builder.ts builds against
+  FLATPAK_RUNTIME_VERSION: "25.08"
+  FLATPAK_BASE_VERSION: "25.08"
+
+jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Work out the version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          elif [[ -n "${INPUT_VERSION}" ]]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            BASE="$(node -p "require('./package.json').version.split('-')[0]")"
+            VERSION="${BASE}-dev.${GITHUB_RUN_NUMBER}"
+          fi
+          if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::'${VERSION}' is not a version like 1.2.3 or 1.2.3-rc.1"
+            exit 1
+          fi
+          PRERELEASE=false
+          [[ "${VERSION}" == *-* ]] && PRERELEASE=true
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "prerelease=${PRERELEASE}" >> "${GITHUB_OUTPUT}"
+          echo "Building Antimatter Desktop ${VERSION} (prerelease: ${PRERELEASE})"
+
+  test:
+    name: Lint, type check and unit tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install the dependencies
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y ca-certificates libxtst-dev libpng++-dev jq tzdata
+          npm ci
+      - name: Test
+        uses: ./.github/actions/test
+
+  linux:
+    name: Linux (${{ matrix.arch }})
+    needs: version
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ubuntu-24.04
+            flatpak-arch: x86_64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            flatpak-arch: aarch64
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install the packaging tools
+        env:
+          FLATPAK_ARCH: ${{ matrix.flatpak-arch }}
+        run: |
+          sudo apt-get update || true
+          # rpm provides rpmbuild for the rpm package; flatpak and flatpak-builder build the flatpak bundle
+          sudo apt-get install -y ca-certificates libxtst-dev libpng++-dev jq tzdata rpm flatpak flatpak-builder
+          # Ubuntu 24.04 stops unprivileged user namespaces, which flatpak-builder's sandbox (bubblewrap) needs
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y --noninteractive flathub \
+            "org.freedesktop.Platform/${FLATPAK_ARCH}/${FLATPAK_RUNTIME_VERSION}" \
+            "org.freedesktop.Sdk/${FLATPAK_ARCH}/${FLATPAK_RUNTIME_VERSION}" \
+            "org.electronjs.Electron2.BaseApp/${FLATPAK_ARCH}/${FLATPAK_BASE_VERSION}"
+      - name: Install the dependencies
+        run: npm ci
+      - name: Set the version
+        run: npm version "${VERSION}" --no-git-tag-version --allow-same-version
+      - name: Build the app
+        run: npm run build-prod
+      - name: Package deb, rpm, AppImage, flatpak and tar.gz
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: npx electron-builder --linux deb rpm appimage flatpak tar.gz "--${ARCH}" --publish=never
+      - name: Collect the packages
+        run: |
+          mkdir -p upload
+          find "release/${VERSION}" -maxdepth 1 -type f \
+            \( -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' -o -name '*.flatpak' -o -name '*.tar.gz' \) \
+            -exec cp -v -t upload {} +
+          ls -l upload
+      - name: Upload the packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: desktop-linux-${{ matrix.arch }}
+          path: upload/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  windows:
+    name: Windows (x64, arm64)
+    needs: version
+    runs-on: windows-2022
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install the dependencies
+        shell: powershell
+        run: |
+          npm i -g node-gyp
+          node-gyp install
+          # Electron's headers for both architectures, to build the native modules for x64 and arm64
+          $electron = jq -r .devDependencies.electron package.json
+          $devdir = "C:\Users\runneradmin\.electron-gyp"
+          node-gyp install --devdir="$devdir" --target=$electron --dist-url="https://electronjs.org/headers"
+          node-gyp install --devdir="$devdir" --target=$electron --dist-url="https://electronjs.org/headers" `
+            --arch arm64
+          npm ci --openssl_fips=''
+      - name: Set the version
+        run: npm version "${VERSION}" --no-git-tag-version --allow-same-version
+      - name: Build the app
+        run: npm run build-prod
+      # No signing: electron-builder only signs with a certificate (CSC_LINK) or an Azure signing account
+      # (AZURE_CLIENT_ID), and neither is set here
+      - name: Package the NSIS installer, the MSI installer and the zip (x64)
+        run: npx electron-builder --win nsis msi zip --x64 --publish=never
+      - name: Package the NSIS installer, the MSI installer and the zip (arm64)
+        run: npx electron-builder --win nsis msi zip --arm64 --publish=never
+      - name: Collect the packages
+        run: |
+          mkdir -p upload
+          find "release/${VERSION}" -maxdepth 1 -type f \( -name '*.exe' -o -name '*.msi' -o -name '*.zip' \) \
+            -exec cp -v -t upload {} +
+          ls -l upload
+      - name: Upload the packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: desktop-windows
+          path: upload/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  macos:
+    name: macOS (arm64, x64, universal)
+    needs: version
+    runs-on: macos-15
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      MACOS_NOTIFICATION_STATE_NO_SDK_CHECK: true
+      AM_MAC_ADHOC_SIGN: "true"
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - name: Install the dependencies
+        run: |
+          # The other workflows build with Xcode 16.2; use it while the runner image has it
+          if [[ -d /Applications/Xcode_16.2.app ]]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+          fi
+          xcodebuild -version
+          npm ci
+      - name: Set the version
+        run: npm version "${VERSION}" --no-git-tag-version --allow-same-version
+      - name: Build the app
+        run: npm run build-prod
+      - name: Package the dmg and the zip (arm64, x64, universal)
+        run: npx electron-builder --mac dmg zip --arm64 --x64 --universal --publish=never
+      - name: Collect the packages
+        run: |
+          mkdir -p upload
+          find "release/${VERSION}" -maxdepth 1 -type f \( -name '*.dmg' -o -name '*.zip' \) -exec cp -v {} upload/ \;
+          ls -l upload
+      - name: Upload the packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: desktop-macos
+          path: upload/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  release:
+    name: GitHub release
+    needs: [version, test, linux, windows, macos]
+    if: github.ref_type == 'tag' || inputs.draft-prerelease
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      PRERELEASE: ${{ needs.version.outputs.prerelease }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download the packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: dist
+          pattern: desktop-*
+          merge-multiple: true
+      # The app checks the latest.txt asset of the latest release to tell people about updates
+      - name: Write latest.txt and SHA256SUMS
+        run: |
+          if [[ "${PRERELEASE}" != "true" ]]; then
+            echo "${VERSION}" > dist/latest.txt
+          fi
+          (cd dist && sha256sum -- * > SHA256SUMS)
+          cat dist/SHA256SUMS
+      - name: Write the release notes
+        run: ./scripts/generate_release_markdown.sh "${VERSION}" ./dist > release-notes.md
+      - name: Publish the release
+        run: |
+          TAG="v${VERSION}"
+          ARGS=(--title "Antimatter Desktop ${VERSION}" --notes-file release-notes.md --generate-notes)
+          [[ "${PRERELEASE}" == "true" ]] && ARGS+=(--prerelease --latest=false)
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            if gh release view "${TAG}" > /dev/null 2>&1; then
+              # A re-run: replace the files of the existing release
+              gh release upload "${TAG}" dist/* --clobber
+            else
+              gh release create "${TAG}" --verify-tag "${ARGS[@]}" dist/*
+            fi
+          else
+            # Run by hand: a draft prerelease, which only creates the tag when someone publishes it
+            gh release create "${TAG}" --draft --prerelease --target "${GITHUB_SHA}" \
+              --title "Antimatter Desktop ${VERSION}" --notes-file release-notes.md --generate-notes dist/*
+          fi

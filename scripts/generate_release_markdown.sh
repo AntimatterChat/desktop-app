@@ -21,11 +21,22 @@ BASE_URL="https://github.com/AntimatterChat/desktop-app/releases/download/v${VER
 cat <<-MD
 ### Antimatter Desktop v${VERSION}
 
-The download links can be found below.
+The download links can be found below, and the SHA-256 checksums of every file in \`SHA256SUMS\`.
+
+These builds are **not signed**:
+
+- Windows: SmartScreen warns about an unknown publisher; choose **More info**, then **Run anyway**.
+- macOS: the app is signed ad hoc and not notarised, so macOS says it can't check it. Open it once with a right-click
+  (or Control-click) on the app, then **Open**, or run \`xattr -dr com.apple.quarantine /Applications/Antimatter.app\`.
+- Linux: the packages and the Flatpak bundle aren't signed; check them against \`SHA256SUMS\`.
 
 #### Windows - installer files
 $(print_link "antimatter-desktop-${VERSION}-win-x64.msi")
 $(print_link "antimatter-desktop-${VERSION}-win-arm64.msi")
+
+#### Windows - per-user installer files (NSIS)
+$(print_link "antimatter-desktop-${VERSION}-win-x64.exe")
+$(print_link "antimatter-desktop-${VERSION}-win-arm64.exe")
 
 #### Windows - zip files
 $(print_link "antimatter-desktop-${VERSION}-win-x64.zip")
@@ -35,6 +46,11 @@ $(print_link "antimatter-desktop-${VERSION}-win-arm64.zip")
 $(print_link "antimatter-desktop-${VERSION}-mac-universal.dmg")
 $(print_link "antimatter-desktop-${VERSION}-mac-x64.dmg")
 $(print_link "antimatter-desktop-${VERSION}-mac-arm64.dmg")
+
+#### Mac - zip files
+$(print_link "antimatter-desktop-${VERSION}-mac-universal.zip")
+$(print_link "antimatter-desktop-${VERSION}-mac-x64.zip")
+$(print_link "antimatter-desktop-${VERSION}-mac-arm64.zip")
 
 #### Linux
 $(print_link "antimatter-desktop-${VERSION}-linux-arm64.tar.gz")
