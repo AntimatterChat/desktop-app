@@ -13,6 +13,7 @@ from version 9.4.
 - Bug reports, feature requests and questions: [AntimatterChat/community](https://github.com/AntimatterChat/community)
 - Server: [github.com/AntimatterChat/antimatter](https://github.com/AntimatterChat/antimatter)
 - Help: [antimatter.chat/help.html](https://antimatter.chat/help.html)
+- Documentation: [antimatter.chat/docs/users](https://antimatter.chat/docs/users/index.html#apps)
 
 ## Features
 
