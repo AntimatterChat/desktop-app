@@ -7,6 +7,8 @@ on:
 
 jobs:
   tag-nightly-build:
+    # Mattermost's release process (its secrets and tags): skipped in the Antimatter repository
+    if: github.repository_owner == 'mattermost'
     runs-on: ubuntu-24.04
     outputs:
       tag: ${{ steps.tag-creation.outputs.tag }}

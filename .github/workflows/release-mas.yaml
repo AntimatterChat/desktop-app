@@ -15,6 +15,8 @@ env:
 
 jobs:
   mac-app-store-preflight:
+    # Mattermost's release process (its secrets and tags): skipped in the Antimatter repository
+    if: github.repository_owner == 'mattermost'
     runs-on: macos-15
     env:
       MACOS_NOTIFICATION_STATE_NO_SDK_CHECK: true
