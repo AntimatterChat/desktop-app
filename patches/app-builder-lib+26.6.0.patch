@@ -21,7 +21,7 @@ index 6fe63f1..85e3925 100644
                      result += `${fileSpace}  </Shortcut>\n`;
                  }
 diff --git a/node_modules/app-builder-lib/templates/msi/template.xml b/node_modules/app-builder-lib/templates/msi/template.xml
-index 2d5cd3c..ef2d419 100644
+index 2d5cd3c..a232082 100644
 --- a/node_modules/app-builder-lib/templates/msi/template.xml
 +++ b/node_modules/app-builder-lib/templates/msi/template.xml
 @@ -1,5 +1,8 @@
@@ -34,15 +34,11 @@ index 2d5cd3c..ef2d419 100644
    <!-- https://blogs.msdn.microsoft.com/gremlininthemachine/2006/12/05/msi-wix-and-unicode/ -->
    <Product Id="*" Name="${productName}" UpgradeCode="${upgradeCode}" Version="${version}" Language="1033" Codepage="65001" Manufacturer="${manufacturer}">
      <Package Compressed="yes" InstallerVersion="500"/>
-@@ -13,19 +16,50 @@
+@@ -13,19 +16,46 @@
  
        So, AllowSameVersionUpgrades="yes" allows to build and test MSI with the same version, and previously installed app will be removed.
      -->
 -    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage='A newer version of "[ProductName]" is already installed.'/>
-+    <!-- Remove versions of newer MSI using the wrong UpgradeCode -->
-+    <Upgrade Id="{0F183CAA-DF79-5400-A71F-684F563AF31C}">
-+      <UpgradeVersion Property="PREVMSIINSTALLER" IncludeMaximum="yes" Maximum="${version}" MigrateFeatures="yes" OnlyDetect="no"/>
-+    </Upgrade>
 +    <MajorUpgrade AllowDowngrades='yes'/>
      <MediaTemplate CompressionLevel="${compressionLevel}" EmbedCab="yes"/>
  
@@ -52,7 +48,7 @@ index 2d5cd3c..ef2d419 100644
      <Property Id="DISABLEADVTSHORTCUTS" Value="1"/>
 +    <Property Id="REINSTALLMODE" Value="amus" />
 +    <Property Id="EXEINSTALLEREXISTS">
-+      <DirectorySearch Path="[LocalAppDataFolder]\Programs\mattermost-desktop" Depth="0">
++      <DirectorySearch Path="[LocalAppDataFolder]\Programs\antimatter-desktop" Depth="0">
 +        <FileSearch Id="SearchEXEUninstaller" Name="Uninstall ${productName}.exe" />
 +      </DirectorySearch>
 +    </Property>
@@ -64,8 +60,8 @@ index 2d5cd3c..ef2d419 100644
  
 +    <util:CloseApplication
 +      Id="closeApplication"
-+      Description="Mattermost is still running. Please ensure to manually close before continuing installation."
-+      Target="Mattermost.exe"
++      Description="${productName} is still running. Please close it before continuing the installation."
++      Target="${productName}.exe"
 +      RebootPrompt="no"
 +      PromptToContinue="yes"
 +    />
@@ -86,15 +82,7 @@ index 2d5cd3c..ef2d419 100644
      {{ if (isRunAfterFinish) { }}
        <CustomAction Id="runAfterFinish" FileKey="mainExecutable" ExeCommand="" Execute="immediate" Impersonate="yes" Return="asyncNoWait"/>
        {{ if (!isAssisted) { }}
-@@ -42,6 +76,7 @@
-       <Property Id="ALLUSERS" Secure="yes" Value="2"/>
-     {{ } -}}
-     <Property Id="MSIINSTALLPERUSER" Secure="yes" Value="1"/>
-+    <Property Id="DISABLEAUTOUPDATE" Value="0"/>
- 
-     {{ if (isAssisted) { }}
-       <WixVariable Id="WixUISupportPerUser" Value="1" Overridable="yes"/>
-@@ -80,6 +115,7 @@
+@@ -80,6 +110,7 @@
        </UI>
      {{ } -}}
  

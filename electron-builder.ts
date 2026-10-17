@@ -70,6 +70,9 @@ const config = {
     ],
     beforePack: 'scripts/beforepack.js',
     afterPack: 'scripts/afterpack.js',
+
+    // Adds the public properties for silent installs (SERVERURL, DEFAULTUSERNAME, AUTOUPDATE...) to the MSI
+    msiProjectCreated: 'scripts/msi_project_created.js',
     deb: {
         artifactName: '${version}/${name}_${version}-1_${arch}.${ext}',
         synopsis: 'Antimatter Desktop App',
