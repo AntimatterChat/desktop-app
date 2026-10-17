@@ -22,6 +22,7 @@ import {
 } from 'common/communication';
 import Config from 'common/config';
 import buildConfig from 'common/config/buildConfig';
+import {getInstallType, getWindowsUpdatePackage} from 'common/config/installType';
 import {Logger} from 'common/log';
 import downloadsManager from 'main/downloadsManager';
 import {localizeMessage} from 'main/i18nManager';
@@ -185,20 +186,29 @@ export class UpdateNotifier {
             return;
         }
 
-        const version = this.versionAvailable;
-        const baseURL = buildConfig.updateNotificationURL;
         const platform = process.platform;
-        const arch = os.arch();
+        const downloadLink = this.getDownloadLink(this.versionAvailable, platform, os.arch());
+        if (downloadLink) {
+            shell.openExternal(downloadLink);
+        } else {
+            log.error('Unsupported platform for manual download', {platform});
+        }
+    };
 
+    /**
+     * The installer of a version on its GitHub release. On Windows it's the per-user .exe, the one people can install
+     * themselves; a copy installed per machine with the MSI (which only checks for updates when the EnableAutoUpdater
+     * policy is 1) gets the .msi, so the administrator doesn't end up with a second, per-user copy.
+     */
+    getDownloadLink = (version: string, platform: NodeJS.Platform, arch: string): string | undefined => {
+        const baseURL = buildConfig.updateNotificationURL;
         switch (platform) {
         case 'win32':
-            shell.openExternal(`${baseURL}/download/v${version}/${this.getDownloadURL(version, 'win', 'msi', arch)}`);
-            break;
+            return `${baseURL}/download/v${version}/${this.getDownloadURL(version, 'win', getWindowsUpdatePackage(getInstallType()), arch)}`;
         case 'darwin':
-            shell.openExternal(`${baseURL}/download/v${version}/${this.getDownloadURL(version, 'mac', 'dmg', arch)}`);
-            break;
+            return `${baseURL}/download/v${version}/${this.getDownloadURL(version, 'mac', 'dmg', arch)}`;
         default:
-            log.error('Unsupported platform for manual download', {platform});
+            return undefined;
         }
     };
 

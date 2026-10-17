@@ -9,6 +9,7 @@ import {
     NO_UPDATE_AVAILABLE,
     UPDATE_SHORTCUT_MENU,
 } from 'common/communication';
+import {getInstallType} from 'common/config/installType';
 import NotificationManager from 'main/notifications';
 
 import {UpdateNotifier} from './updateNotifier';
@@ -45,6 +46,11 @@ jest.mock('common/config/buildConfig', () => ({
     default: {
         updateNotificationURL: 'https://github.com/AntimatterChat/desktop-app/releases',
     },
+}));
+
+jest.mock('common/config/installType', () => ({
+    ...jest.requireActual('common/config/installType'),
+    getInstallType: jest.fn(() => 'nsis'),
 }));
 
 jest.mock('main/notifications', () => ({
@@ -245,6 +251,40 @@ describe('main/updateNotifier', () => {
             } as unknown as Response);
             const updateNotifier = new UpdateNotifier();
             expect(await updateNotifier.performUpdateCheck(false)).toBeNull();
+        });
+    });
+
+    describe('getDownloadLink', () => {
+        const releases = 'https://github.com/AntimatterChat/desktop-app/releases/download/v6.5.0';
+
+        it('points a Windows update to the per-user .exe installer', () => {
+            jest.mocked(getInstallType).mockReturnValue('nsis');
+            const updateNotifier = new UpdateNotifier();
+            expect(updateNotifier.getDownloadLink('6.5.0', 'win32', 'x64')).toBe(`${releases}/antimatter-desktop-6.5.0-win-x64.exe`);
+            expect(updateNotifier.getDownloadLink('6.5.0', 'win32', 'arm64')).toBe(`${releases}/antimatter-desktop-6.5.0-win-arm64.exe`);
+        });
+
+        it('points the zip (portable) copy to the .exe installer too', () => {
+            jest.mocked(getInstallType).mockReturnValue('portable');
+            const updateNotifier = new UpdateNotifier();
+            expect(updateNotifier.getDownloadLink('6.5.0', 'win32', 'x64')).toBe(`${releases}/antimatter-desktop-6.5.0-win-x64.exe`);
+        });
+
+        it('keeps an MSI (per-machine) install on the .msi, not a second per-user copy', () => {
+            jest.mocked(getInstallType).mockReturnValue('msi');
+            const updateNotifier = new UpdateNotifier();
+            expect(updateNotifier.getDownloadLink('6.5.0', 'win32', 'x64')).toBe(`${releases}/antimatter-desktop-6.5.0-win-x64.msi`);
+        });
+
+        it('points a macOS update to the dmg', () => {
+            jest.mocked(getInstallType).mockReturnValue('other');
+            const updateNotifier = new UpdateNotifier();
+            expect(updateNotifier.getDownloadLink('6.5.0', 'darwin', 'arm64')).toBe(`${releases}/antimatter-desktop-6.5.0-mac-arm64.dmg`);
+        });
+
+        it('has no direct download on Linux', () => {
+            const updateNotifier = new UpdateNotifier();
+            expect(updateNotifier.getDownloadLink('6.5.0', 'linux', 'x64')).toBeUndefined();
         });
     });
 });

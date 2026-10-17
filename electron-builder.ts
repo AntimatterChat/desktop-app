@@ -216,6 +216,16 @@ const config = {
             publisherName: process.env.AZURE_SIGN_PUBLISHER,
         } : null,
     },
+
+    // The .exe: installs for the current user only (%LOCALAPPDATA%\Programs), without administrator rights; the
+    // update notifications point to it
+    nsis: {
+        oneClick: true,
+        perMachine: false,
+    },
+
+    // The .msi: installs for every user of the machine (Program Files), for companies deploying it (SCCM, Intune,
+    // Group Policy); such a copy doesn't check for updates unless the EnableAutoUpdater policy is 1
     msi: {
         additionalWixArgs: ['-ext', 'WixUtilExtension'],
         upgradeCode: '{FC1E639B-7BFC-40F8-BD17-633F142321C1}',

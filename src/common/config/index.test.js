@@ -2,6 +2,7 @@
 // See LICENSE.txt for license information.
 
 import {Config} from 'common/config';
+import {getInstallType} from 'common/config/installType';
 
 const configPath = '/fake/config/path';
 const appName = 'app-name';
@@ -61,6 +62,11 @@ jest.mock('common/config/buildConfig', () => {
 jest.mock('common/config/policyConfigLoader', () => ({
     getPolicyConfig: jest.fn().mockReturnValue({}),
     getAppsUseLightTheme: jest.fn().mockReturnValue(true),
+}));
+
+jest.mock('common/config/installType', () => ({
+    ...jest.requireActual('common/config/installType'),
+    getInstallType: jest.fn(() => 'nsis'),
 }));
 
 jest.mock('electron', () => ({
@@ -361,6 +367,55 @@ describe('common/config', () => {
                 darkMode: false,
                 enableServerManagement: true,
             });
+        });
+    });
+
+    describe('canUpgrade', () => {
+        let originalNodeEnv;
+
+        beforeEach(() => {
+            originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
+        });
+
+        afterEach(() => {
+            process.env.NODE_ENV = originalNodeEnv;
+            getInstallType.mockReturnValue('nsis');
+        });
+
+        const makeConfig = (policy) => {
+            const config = new Config();
+            config.reload = jest.fn();
+            config.init(configPath, appName, appPath);
+            config.buildConfigData = {enableUpdateNotifications: true};
+            config.policyConfigData = policy;
+            return config;
+        };
+
+        it('checks for updates for an .exe install', () => {
+            getInstallType.mockReturnValue('nsis');
+            expect(makeConfig({}).canUpgrade).toBe(true);
+        });
+
+        it('does not nag the people using an MSI (per-machine) install', () => {
+            getInstallType.mockReturnValue('msi');
+            expect(makeConfig({}).canUpgrade).toBe(false);
+        });
+
+        it('checks for an MSI install when the EnableAutoUpdater policy is 1', () => {
+            getInstallType.mockReturnValue('msi');
+            expect(makeConfig({enableUpdateNotifications: true}).canUpgrade).toBe(true);
+        });
+
+        it('never checks when the EnableAutoUpdater policy is 0', () => {
+            getInstallType.mockReturnValue('nsis');
+            expect(makeConfig({enableUpdateNotifications: false}).canUpgrade).toBe(false);
+        });
+
+        it('never checks when the build turns update notifications off', () => {
+            const config = makeConfig({enableUpdateNotifications: true});
+            config.buildConfigData = {enableUpdateNotifications: false};
+            expect(config.canUpgrade).toBe(false);
         });
     });
 });

@@ -30,13 +30,13 @@ These builds are **not signed**:
   (or Control-click) on the app, then **Open**, or run \`xattr -dr com.apple.quarantine /Applications/Antimatter.app\`.
 - Linux: the packages and the Flatpak bundle aren't signed; check them against \`SHA256SUMS\`.
 
-#### Windows - installer files
-$(print_link "antimatter-desktop-${VERSION}-win-x64.msi")
-$(print_link "antimatter-desktop-${VERSION}-win-arm64.msi")
-
-#### Windows - per-user installer files (NSIS)
+#### Windows - installer (for your account, no administrator rights needed)
 $(print_link "antimatter-desktop-${VERSION}-win-x64.exe")
 $(print_link "antimatter-desktop-${VERSION}-win-arm64.exe")
+
+#### Windows - MSI package (for every user of the computer, to deploy with SCCM, Intune or Group Policy)
+$(print_link "antimatter-desktop-${VERSION}-win-x64.msi")
+$(print_link "antimatter-desktop-${VERSION}-win-arm64.msi")
 
 #### Windows - zip files
 $(print_link "antimatter-desktop-${VERSION}-win-x64.zip")

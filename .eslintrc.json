@@ -178,6 +178,26 @@
                     ]
                 ]
             }
+        },
+        {
+            "files": [
+                "scripts/msi_project_created.js",
+                "scripts/msi_project_created.test.js",
+                "src/app/views/loginPrefill.ts",
+                "src/app/views/loginPrefill.test.ts",
+                "src/common/config/installType.ts",
+                "src/common/config/installType.test.ts"
+            ],
+            "rules": {
+                "header/header": [
+                    2,
+                    "line",
+                    [
+                        " Copyright (c) 2026-present Antimatter contributors. All Rights Reserved.",
+                        " See LICENSE.txt for license information."
+                    ]
+                ]
+            }
         }
     ]
 }

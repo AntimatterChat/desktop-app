@@ -20,6 +20,7 @@ import type {
 
 import buildConfig from './buildConfig';
 import defaultPreferences, {getDefaultDownloadLocation} from './defaultPreferences';
+import {getInstallType, isUpdateCheckAllowed} from './installType';
 import migrateConfigItems from './migrationPreferences';
 import policyConfigLoader from './policyConfigLoader';
 import upgradeConfigData from './upgradePreferences';
@@ -219,7 +220,17 @@ export class Config extends EventEmitter {
     }
 
     get canUpgrade() {
-        return process.env.NODE_ENV === 'test' || (this.buildConfigData?.enableUpdateNotifications && !(this.policyConfigData && this.policyConfigData?.enableUpdateNotifications === false));
+        if (process.env.NODE_ENV === 'test') {
+            return true;
+        }
+        if (!this.buildConfigData) {
+            return undefined;
+        }
+        return isUpdateCheckAllowed({
+            buildEnabled: this.buildConfigData.enableUpdateNotifications,
+            policyEnabled: this.policyConfigData?.enableUpdateNotifications,
+            installType: getInstallType(),
+        });
     }
 
     get autoCheckForUpdates() {
