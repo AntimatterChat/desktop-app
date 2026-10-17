@@ -154,6 +154,9 @@ describe('app/views/loginPrefill', () => {
 
         it('treats the username as data, never as code', () => {
             const page = makePage();
+
+            // A literal ${...} on purpose: it must not become a template expression in the page script
+            // eslint-disable-next-line no-template-curly-in-string
             const username = '"; globalThis.injected = true; "\\\'`${1}</script> ';
             vm.runInNewContext(getLoginPrefillScript(username), page.sandbox);
             expect(page.sandbox.injected).toBeUndefined();
