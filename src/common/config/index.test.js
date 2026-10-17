@@ -3,6 +3,7 @@
 
 import {Config} from 'common/config';
 import {getInstallType} from 'common/config/installType';
+import policyConfigLoader from 'common/config/policyConfigLoader';
 
 const configPath = '/fake/config/path';
 const appName = 'app-name';
@@ -367,6 +368,39 @@ describe('common/config', () => {
                 darkMode: false,
                 enableServerManagement: true,
             });
+        });
+    });
+
+    describe('policies', () => {
+        let originalPlatform;
+
+        beforeEach(() => {
+            originalPlatform = process.platform;
+        });
+
+        afterEach(() => {
+            Object.defineProperty(process, 'platform', {value: originalPlatform});
+            policyConfigLoader.getPolicyConfig.mockReturnValue({});
+        });
+
+        it('loads the policies on Linux too (the /etc/antimatter-desktop/policies.json file)', () => {
+            Object.defineProperty(process, 'platform', {value: 'linux'});
+            policyConfigLoader.getPolicyConfig.mockReturnValue({enableServerManagement: false, servers: [registryServer]});
+            const config = new Config();
+            config.reload = jest.fn();
+            config.init(configPath, appName, appPath);
+            expect(policyConfigLoader.getPolicyConfig).toHaveBeenCalled();
+            expect(config.enableServerManagement).toBe(false);
+            expect(config.predefinedServers).toContainEqual(registryServer);
+        });
+
+        it('gives the default username to the login prefill only, not in the combined config', () => {
+            policyConfigLoader.getPolicyConfig.mockReturnValue({defaultUsername: 'maya', servers: []});
+            const config = new Config();
+            config.reload = jest.fn();
+            config.init(configPath, appName, appPath);
+            expect(config.defaultUsername).toBe('maya');
+            expect(config.data).not.toHaveProperty('defaultUsername');
         });
     });
 

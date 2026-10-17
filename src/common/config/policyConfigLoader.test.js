@@ -1,10 +1,12 @@
 // Copyright (c) 2016-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+import fs from 'fs';
+
 import {getPreferenceValue as getCFPreferenceValue} from 'cf-prefs';
 import {enumerateValues} from 'registry-js';
 
-import policyConfigLoader from 'common/config/policyConfigLoader';
+import policyConfigLoader, {expandPolicyVariables, LINUX_POLICY_FILES} from 'common/config/policyConfigLoader';
 
 jest.mock('registry-js', () => {
     return {
@@ -29,6 +31,7 @@ jest.mock('registry-js', () => {
                     return [
                         {name: 'EnableServerManagement', data: 1},
                         {name: 'EnableAutoUpdater', data: 0},
+                        {name: 'DefaultUsername', data: 'lm-user'},
                     ];
                 }
                 return [];
@@ -49,6 +52,7 @@ jest.mock('registry-js', () => {
                     return [
                         {name: 'EnableServerManagement', data: 0},
                         {name: 'EnableAutoUpdater', data: 1},
+                        {name: 'DefaultUsername', data: 'cu-user'},
                     ];
                 }
                 return [];
@@ -101,13 +105,16 @@ describe('common/config/policyConfigLoader', () => {
                 Object.defineProperty(process, 'platform', {value: 'win32'});
             });
 
-            it('returns merged servers from both hives and CU overrides LM for booleans', () => {
+            it('returns merged servers from both hives and lets the machine policy (LM) win over the user one (CU)', () => {
                 const data = policyConfigLoader.getPolicyConfig();
                 expect(data.servers).toHaveLength(4);
                 expect(data.servers).toContainEqual({name: 'server-lm-1', url: 'http://server-lm-1.com'});
                 expect(data.servers).toContainEqual({name: 'server-cu-1', url: 'http://server-cu-1.com'});
-                expect(data.enableServerManagement).toBe(false);
-                expect(data.enableUpdateNotifications).toBe(true);
+
+                // A user can't lift a restriction the machine policy sets
+                expect(data.enableServerManagement).toBe(true);
+                expect(data.enableUpdateNotifications).toBe(false);
+                expect(data.defaultUsername).toBe('lm-user');
                 expect(data.trustedEmbeddedMediaOrigins).toContainEqual({
                     serverOrigin: 'https://chat-lm.example.com',
                     embeddedOrigin: 'https://meet-lm.example.com',
@@ -182,6 +189,86 @@ describe('common/config/policyConfigLoader', () => {
                 ]);
             });
 
+            it('uses the user policy when the machine has none', () => {
+                enumerateValues.mockImplementation((hive, key) => {
+                    if (key === 'SOFTWARE\\Policies\\Antimatter' && hive === 'HKEY_CURRENT_USER') {
+                        return [{name: 'EnableAutoUpdater', data: 0}];
+                    }
+                    return [];
+                });
+                const data = policyConfigLoader.getPolicyConfig();
+                expect(data.enableUpdateNotifications).toBe(false);
+            });
+
+            it('reads the DefaultUsername policy and replaces the environment variables in it', () => {
+                const originalUsername = process.env.AM_POLICY_TEST_USERNAME;
+                process.env.AM_POLICY_TEST_USERNAME = 'maya';
+                try {
+                    enumerateValues.mockImplementation((hive, key) => {
+                        if (key === 'SOFTWARE\\Policies\\Antimatter' && hive === 'HKEY_LOCAL_MACHINE') {
+                            return [{name: 'DefaultUsername', data: '%AM_POLICY_TEST_USERNAME%@example.com'}];
+                        }
+                        return [];
+                    });
+                    expect(policyConfigLoader.getPolicyConfig().defaultUsername).toBe('maya@example.com');
+                } finally {
+                    if (originalUsername === undefined) {
+                        delete process.env.AM_POLICY_TEST_USERNAME;
+                    } else {
+                        process.env.AM_POLICY_TEST_USERNAME = originalUsername;
+                    }
+                }
+            });
+
+            it('leaves out the policies that are not set, so they do not hide the build config', () => {
+                enumerateValues.mockImplementation(() => []);
+                const data = policyConfigLoader.getPolicyConfig();
+                expect(data).not.toHaveProperty('enableServerManagement');
+                expect(data).not.toHaveProperty('enableUpdateNotifications');
+                expect(data).not.toHaveProperty('defaultUsername');
+                expect(data.servers).toEqual([]);
+            });
+
+            it('falls back to the Mattermost policy key when the Antimatter key holds nothing', () => {
+                enumerateValues.mockImplementation((hive, key) => {
+                    if (hive !== 'HKEY_LOCAL_MACHINE') {
+                        return [];
+                    }
+                    if (key === 'SOFTWARE\\Policies\\Mattermost\\DefaultServerList') {
+                        return [{name: 'legacy', data: 'https://legacy.example.com'}];
+                    }
+                    if (key === 'SOFTWARE\\Policies\\Mattermost') {
+                        return [{name: 'EnableAutoUpdater', data: 0}, {name: 'EnableServerManagement', data: 0}];
+                    }
+                    return [];
+                });
+                const data = policyConfigLoader.getPolicyConfig();
+                expect(data.servers).toEqual([{name: 'legacy', url: 'https://legacy.example.com'}]);
+                expect(data.enableUpdateNotifications).toBe(false);
+                expect(data.enableServerManagement).toBe(false);
+            });
+
+            it('ignores the Mattermost policy key when the Antimatter key is set', () => {
+                enumerateValues.mockImplementation((hive, key) => {
+                    if (hive !== 'HKEY_LOCAL_MACHINE') {
+                        return [];
+                    }
+                    if (key === 'SOFTWARE\\Policies\\Antimatter\\DefaultServerList') {
+                        return [{name: 'antimatter', data: 'https://chat.example.com'}];
+                    }
+                    if (key === 'SOFTWARE\\Policies\\Antimatter') {
+                        return [{name: 'EnableAutoUpdater', data: 1}];
+                    }
+                    if (key.startsWith('SOFTWARE\\Policies\\Mattermost')) {
+                        return key.endsWith('DefaultServerList') ? [{name: 'legacy', data: 'https://legacy.example.com'}] : [{name: 'EnableAutoUpdater', data: 0}];
+                    }
+                    return [];
+                });
+                const data = policyConfigLoader.getPolicyConfig();
+                expect(data.servers).toEqual([{name: 'antimatter', url: 'https://chat.example.com'}]);
+                expect(data.enableUpdateNotifications).toBe(true);
+            });
+
             it('returns consistent data from multiple calls', () => {
                 const first = policyConfigLoader.getPolicyConfig();
                 const second = policyConfigLoader.getPolicyConfig();
@@ -206,6 +293,30 @@ describe('common/config/policyConfigLoader', () => {
                 expect(data.trustedEmbeddedMediaOrigins).toEqual([
                     {serverOrigin: 'https://chat.example.com', embeddedOrigin: 'https://meet.example.com'},
                 ]);
+            });
+
+            it('reads DefaultUsername and integer booleans from managed preferences', () => {
+                getCFPreferenceValue.mockImplementation((key) => {
+                    if (key === 'DefaultUsername') {
+                        return ' maya ';
+                    }
+                    if (key === 'EnableAutoUpdater') {
+                        return 0;
+                    }
+                    if (key === 'EnableServerManagement') {
+                        return 1;
+                    }
+                    return undefined;
+                });
+                const data = policyConfigLoader.getPolicyConfig();
+                expect(data.defaultUsername).toBe('maya');
+                expect(data.enableUpdateNotifications).toBe(false);
+                expect(data.enableServerManagement).toBe(true);
+            });
+
+            it('ignores a DefaultUsername that is not a string', () => {
+                getCFPreferenceValue.mockImplementation((key) => (key === 'DefaultUsername' ? ['maya'] : undefined));
+                expect(policyConfigLoader.getPolicyConfig()).not.toHaveProperty('defaultUsername');
             });
 
             it('returns empty servers and undefined booleans when no managed prefs', () => {
@@ -238,6 +349,110 @@ describe('common/config/policyConfigLoader', () => {
                 const data = policyConfigLoader.getPolicyConfig();
                 expect(data.trustedEmbeddedMediaOrigins).toEqual([]);
             });
+        });
+    });
+
+    describe('getPolicyConfig on Linux', () => {
+        let readFileSync;
+
+        beforeEach(() => {
+            Object.defineProperty(process, 'platform', {value: 'linux'});
+            readFileSync = jest.spyOn(fs, 'readFileSync');
+        });
+
+        afterEach(() => {
+            readFileSync.mockRestore();
+        });
+
+        const enoent = () => {
+            const error = new Error('ENOENT: no such file or directory');
+            error.code = 'ENOENT';
+            throw error;
+        };
+
+        it('reads /etc/antimatter-desktop/policies.json', () => {
+            readFileSync.mockImplementation((file) => {
+                if (file === '/etc/antimatter-desktop/policies.json') {
+                    return JSON.stringify({
+                        DefaultServerList: [{name: 'Chat', url: 'https://chat.example.com'}, 'not a server'],
+                        DefaultUsername: 'maya',
+                        EnableServerManagement: false,
+                        EnableAutoUpdater: false,
+                        TrustedEmbeddedMediaOrigins: [{serverOrigin: 'https://chat.example.com', embeddedOrigin: 'https://meet.example.com'}, {serverOrigin: 1}],
+                    });
+                }
+                return enoent();
+            });
+            const data = policyConfigLoader.getPolicyConfig();
+            expect(LINUX_POLICY_FILES[0]).toBe('/etc/antimatter-desktop/policies.json');
+            expect(data.servers).toEqual([{name: 'Chat', url: 'https://chat.example.com'}]);
+            expect(data.defaultUsername).toBe('maya');
+            expect(data.enableServerManagement).toBe(false);
+            expect(data.enableUpdateNotifications).toBe(false);
+            expect(data.trustedEmbeddedMediaOrigins).toEqual([{serverOrigin: 'https://chat.example.com', embeddedOrigin: 'https://meet.example.com'}]);
+        });
+
+        it('reads the host file from a Flatpak sandbox', () => {
+            readFileSync.mockImplementation((file) => {
+                if (file === '/run/host/etc/antimatter-desktop/policies.json') {
+                    return JSON.stringify({EnableAutoUpdater: false});
+                }
+                return enoent();
+            });
+            expect(policyConfigLoader.getPolicyConfig().enableUpdateNotifications).toBe(false);
+        });
+
+        it('sets no policy without a policy file', () => {
+            readFileSync.mockImplementation(enoent);
+            const data = policyConfigLoader.getPolicyConfig();
+            expect(data.servers).toEqual([]);
+            expect(data).not.toHaveProperty('enableServerManagement');
+            expect(data).not.toHaveProperty('enableUpdateNotifications');
+            expect(data).not.toHaveProperty('defaultUsername');
+        });
+
+        it('ignores a policy file that is not valid JSON, or not an object', () => {
+            readFileSync.mockReturnValue('{"EnableAutoUpdater": false');
+            expect(policyConfigLoader.getPolicyConfig()).not.toHaveProperty('enableUpdateNotifications');
+
+            readFileSync.mockReturnValue('[false]');
+            expect(policyConfigLoader.getPolicyConfig()).not.toHaveProperty('enableUpdateNotifications');
+        });
+
+        it('ignores values of the wrong type', () => {
+            readFileSync.mockReturnValue(JSON.stringify({EnableAutoUpdater: 'no', DefaultServerList: {name: 'x'}, DefaultUsername: 42}));
+            const data = policyConfigLoader.getPolicyConfig();
+            expect(data).not.toHaveProperty('enableUpdateNotifications');
+            expect(data).not.toHaveProperty('defaultUsername');
+            expect(data.servers).toEqual([]);
+        });
+    });
+
+    describe('expandPolicyVariables', () => {
+        it('replaces environment variables, whatever their case', () => {
+            expect(expandPolicyVariables('%USERNAME%@example.com', {USERNAME: 'maya'})).toBe('maya@example.com');
+            expect(expandPolicyVariables('%username%', {USERNAME: 'maya'})).toBe('maya');
+            expect(expandPolicyVariables('%USERDOMAIN%\\%USERNAME%', {USERDOMAIN: 'LUMEN', USERNAME: 'maya'})).toBe('LUMEN\\maya');
+        });
+
+        it('keeps a value without variables', () => {
+            expect(expandPolicyVariables('maya', {})).toBe('maya');
+            expect(expandPolicyVariables('50% off', {})).toBe('50% off');
+        });
+
+        it('gives nothing when a variable is not set, rather than a literal %NAME%', () => {
+            expect(expandPolicyVariables('%AM_NOT_SET_ANYWHERE%@example.com', {})).toBeUndefined();
+        });
+
+        it('falls back to the account name for the username variables', () => {
+            const os = require('os');
+            const userInfo = jest.spyOn(os, 'userInfo').mockReturnValue({username: 'maya'});
+            try {
+                expect(expandPolicyVariables('%USER%', {})).toBe('maya');
+                expect(expandPolicyVariables('%USERNAME%', {})).toBe('maya');
+            } finally {
+                userInfo.mockRestore();
+            }
         });
     });
 

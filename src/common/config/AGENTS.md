@@ -8,10 +8,26 @@ Supports V0 through V4 with automatic migration via `upgradePreferences.ts`. Add
 
 ## Policy-managed configuration (`policyConfigLoader.ts`)
 
-- **Windows**: Registry keys set by Group Policy. GPO templates in `resources/windows/gpo`.
-- **macOS**: CFPreferences set by MDM profiles via `cf-prefs`.
+- **Windows**: Registry values under `SOFTWARE\Policies\Antimatter`, HKLM first (a machine policy wins over HKCU),
+  falling back per key to `SOFTWARE\Policies\Mattermost`. Set by Group Policy (ADMX templates in
+  `resources/windows/gpo`) or by the MSI public properties (`scripts/msi_project_created.js`).
+- **macOS**: CFPreferences of the bundle id (`chat.antimatter.desktop`) set by MDM profiles, via `cf-prefs`
+  (examples in `resources/mac/mdm`).
+- **Linux**: the JSON file `/etc/antimatter-desktop/policies.json` (or `/run/host/etc/...` in a Flatpak), same keys as
+  macOS (example in `resources/linux`).
 
-Policy values override user preferences and cannot be changed by the user.
+Keys: `DefaultServerList`, `DefaultUsername` (prefilled on the login page of the predefined servers by
+`app/views/loginPrefill.ts`; `%VAR%` environment variables are expanded), `EnableServerManagement`,
+`EnableAutoUpdater`, `TrustedEmbeddedMediaOrigins`. Unset policies are left out of the result, so they don't hide the
+build config. Policy values override user preferences and cannot be changed by the user. The policies are read once,
+at startup.
+
+## Install type and updates (`installType.ts`)
+
+`getInstallType()` tells the Windows `.exe` (NSIS, per user: its uninstaller sits next to the app) from the `.msi`
+(per machine: the MSI records `InstallDir` under `HKLM\SOFTWARE\Antimatter\Desktop`, or the app is in Program
+Files). `Config.canUpgrade` uses `isUpdateCheckAllowed()`: an MSI copy doesn't check for updates unless
+`EnableAutoUpdater` is 1, and its update download is then the `.msi`; every other copy downloads the `.exe`.
 
 ## Build config (`buildConfig.ts`)
 

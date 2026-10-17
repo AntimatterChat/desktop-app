@@ -149,6 +149,9 @@ export type RegistryConfig = {
     enableServerManagement: boolean;
     enableUpdateNotifications: boolean;
     trustedEmbeddedMediaOrigins: TrustedEmbeddedMediaOrigin[];
+
+    // Prefilled on the login page of the servers set by the administrator (policy DefaultUsername)
+    defaultUsername?: string;
 }
 
 export type CombinedConfig = Omit<CurrentConfig, 'servers'> & Omit<BuildConfig, 'defaultServers'> & {

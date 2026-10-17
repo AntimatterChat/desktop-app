@@ -15,8 +15,8 @@ import {buildServerMap} from '../../helpers/serverMap';
 
 const isSupported = (process.platform === 'win32' || process.platform === 'darwin') && process.env.RUN_POLICY_E2E === 'true';
 
-const WIN_REG_PATH_HKCU = 'HKCU:\\SOFTWARE\\Policies\\Mattermost';
-const WIN_REG_PATH_HKLM = 'HKLM:\\SOFTWARE\\Policies\\Mattermost';
+const WIN_REG_PATH_HKCU = 'HKCU:\\SOFTWARE\\Policies\\Antimatter';
+const WIN_REG_PATH_HKLM = 'HKLM:\\SOFTWARE\\Policies\\Antimatter';
 const WIN_REG_SERVER_LIST_PATH = `${WIN_REG_PATH_HKCU}\\DefaultServerList`;
 const APP_ID = 'com.github.Electron';
 

@@ -53,9 +53,9 @@ export class Config extends EventEmitter {
         this.appName = appName;
 
         this.reload();
-        if (process.platform === 'win32' || process.platform === 'darwin') {
-            this.onLoadRegistry(policyConfigLoader.getPolicyConfig());
-        }
+
+        // Group Policy on Windows, managed preferences on macOS, /etc/antimatter-desktop/policies.json on Linux
+        this.onLoadRegistry(policyConfigLoader.getPolicyConfig());
     };
 
     /**
@@ -231,6 +231,13 @@ export class Config extends EventEmitter {
             policyEnabled: this.policyConfigData?.enableUpdateNotifications,
             installType: getInstallType(),
         });
+    }
+
+    /**
+     * The username to prefill on the login page of the servers the administrator set (DefaultUsername policy)
+     */
+    get defaultUsername() {
+        return this.policyConfigData?.defaultUsername;
     }
 
     get autoCheckForUpdates() {
@@ -409,6 +416,9 @@ export class Config extends EventEmitter {
         // We don't want to include the servers in the combined config, they should only be accesible via the ServerManager
         delete (this.combinedData as any).servers;
         delete (this.combinedData as any).defaultServers;
+
+        // Only the login page prefill reads it (Config.defaultUsername), keep it out of what the views receive
+        delete (this.combinedData as any).defaultUsername;
 
         if (this.combinedData) {
             this.combinedData.appName = this.appName;

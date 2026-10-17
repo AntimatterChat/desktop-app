@@ -24,6 +24,7 @@ import {
     RELOAD_VIEW,
     UPDATE_SHORTCUT_MENU,
 } from 'common/communication';
+import Config from 'common/config';
 import type {Logger} from 'common/log';
 import ServerManager from 'common/servers/serverManager';
 import {RELOAD_INTERVAL, MAX_SERVER_RETRIES, SECOND, MAX_LOADING_SCREEN_SECONDS} from 'common/utils/constants';
@@ -37,6 +38,7 @@ import performanceMonitor from 'main/performanceMonitor';
 import LocalNetworkAccessManager from 'main/security/localNetworkAccess';
 import {getServerAPI} from 'main/server/serverAPI';
 
+import {getLoginPrefillScript, isServerLoginPage} from './loginPrefill';
 import WebContentsEventManager from './webContentEvents';
 
 import ContextMenu from '../../main/contextMenu';
@@ -97,6 +99,8 @@ export class MattermostWebContentsView extends EventEmitter {
             }
         });
         this.webContentsView.webContents.on('did-navigate-in-page', () => this.handlePageTitleUpdated(this.webContentsView.webContents.getTitle()));
+        this.webContentsView.webContents.on('did-finish-load', this.prefillLoginUsername);
+        this.webContentsView.webContents.on('did-navigate-in-page', this.prefillLoginUsername);
         this.webContentsView.webContents.on('page-title-updated', (_, newTitle) => this.handlePageTitleUpdated(newTitle));
         this.webContentsView.webContents.on('devtools-focused', this.emitShortcutMenuUpdate);
         this.webContentsView.webContents.on('devtools-closed', this.emitShortcutMenuUpdate);
@@ -518,6 +522,24 @@ export class MattermostWebContentsView extends EventEmitter {
         } else {
             ViewManager.updateViewTitle(this.id, channelName, secondPart);
         }
+    };
+
+    /**
+     * Fills the username set by the administrator (DefaultUsername policy) on the login page of the servers they set,
+     * never on a server the person added.
+     */
+    private prefillLoginUsername = () => {
+        const username = Config.defaultUsername;
+        if (!username) {
+            return;
+        }
+        const server = ServerManager.getServer(this.view.serverId);
+        if (!server?.isPredefined || !isServerLoginPage(this.currentURL, server.url)) {
+            return;
+        }
+        this.webContents?.executeJavaScript(getLoginPrefillScript(username)).catch((error) => {
+            this.log.verbose('Could not prefill the username on the login page', {error});
+        });
     };
 
     private handleAltBlur = () => {

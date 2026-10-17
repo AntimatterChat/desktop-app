@@ -6,6 +6,7 @@
 import {ipcMain} from 'electron';
 
 import AppState from 'common/appState';
+import Config from 'common/config';
 import {BROWSER_HISTORY_PUSH, LOAD_FAILED, SERVER_URL_CHANGED, UPDATE_SHORTCUT_MENU, UPDATE_TARGET_URL} from 'common/communication';
 import {MattermostServer} from 'common/servers/MattermostServer';
 import ServerManager from 'common/servers/serverManager';
@@ -55,6 +56,9 @@ jest.mock('electron', () => ({
     },
 }));
 
+jest.mock('common/config', () => ({
+    defaultUsername: undefined,
+}));
 jest.mock('app/mainWindow/mainWindow', () => ({
     focusThreeDotMenu: jest.fn(),
     get: jest.fn(),
@@ -733,6 +737,71 @@ describe('main/views/MattermostWebContentsView', () => {
             } finally {
                 Object.defineProperty(process, 'platform', {value: originalPlatform, configurable: true});
             }
+        });
+    });
+
+    describe('login page username prefill', () => {
+        const window = {on: jest.fn(), webContents: {send: jest.fn()}, isDestroyed: jest.fn(() => false)};
+        const managedServer = new MattermostServer({name: 'managed', url: 'http://server-1.com'}, true, undefined);
+        const userServer = new MattermostServer({name: 'mine', url: 'http://server-1.com'}, false, undefined);
+
+        const makeView = (pageURL) => {
+            const mattermostView = new MattermostWebContentsView(view, {}, window);
+            mattermostView.webContentsView.webContents.getURL = () => pageURL;
+            mattermostView.webContentsView.webContents.executeJavaScript = jest.fn().mockResolvedValue(undefined);
+            return mattermostView;
+        };
+        const fire = (mattermostView, event) => {
+            mattermostView.webContentsView.webContents.on.mock.calls.
+                filter(([name]) => name === event).
+                forEach(([, handler]) => handler());
+        };
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+            Config.defaultUsername = 'maya';
+            ServerManager.getServer.mockReturnValue(managedServer);
+        });
+
+        afterEach(() => {
+            Config.defaultUsername = undefined;
+        });
+
+        it('fills the username on the login page of a server the administrator set', () => {
+            const mattermostView = makeView('http://server-1.com/login');
+            fire(mattermostView, 'did-finish-load');
+            expect(mattermostView.webContentsView.webContents.executeJavaScript).toHaveBeenCalledTimes(1);
+            expect(mattermostView.webContentsView.webContents.executeJavaScript.mock.calls[0][0]).toContain('"maya"');
+        });
+
+        it('also fills it when the web app navigates to the login page', () => {
+            const mattermostView = makeView('http://server-1.com/login?redirect_to=%2F');
+            fire(mattermostView, 'did-navigate-in-page');
+            expect(mattermostView.webContentsView.webContents.executeJavaScript).toHaveBeenCalledTimes(1);
+        });
+
+        it('never fills it on a server the person added', () => {
+            ServerManager.getServer.mockReturnValue(userServer);
+            const mattermostView = makeView('http://server-1.com/login');
+            fire(mattermostView, 'did-finish-load');
+            expect(mattermostView.webContentsView.webContents.executeJavaScript).not.toHaveBeenCalled();
+        });
+
+        it('does nothing on other pages, or on another site', () => {
+            const channelView = makeView('http://server-1.com/team/channels/town-square');
+            fire(channelView, 'did-finish-load');
+            expect(channelView.webContentsView.webContents.executeJavaScript).not.toHaveBeenCalled();
+
+            const otherSite = makeView('http://other.example.com/login');
+            fire(otherSite, 'did-finish-load');
+            expect(otherSite.webContentsView.webContents.executeJavaScript).not.toHaveBeenCalled();
+        });
+
+        it('does nothing without the DefaultUsername policy', () => {
+            Config.defaultUsername = undefined;
+            const mattermostView = makeView('http://server-1.com/login');
+            fire(mattermostView, 'did-finish-load');
+            expect(mattermostView.webContentsView.webContents.executeJavaScript).not.toHaveBeenCalled();
         });
     });
 });
