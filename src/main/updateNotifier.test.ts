@@ -3,13 +3,16 @@
 
 import {ipcMain as notMockedIpcMain, app as notMockedApp, net as notMockedNet} from 'electron';
 
+import MessageModal from 'app/mainWindow/modals/messageModal';
 import {
     CHECK_FOR_UPDATES,
     UPDATE_AVAILABLE,
     NO_UPDATE_AVAILABLE,
     UPDATE_SHORTCUT_MENU,
 } from 'common/communication';
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import {getInstallType} from 'common/config/installType';
+import {localizeMessage} from 'main/i18nManager';
 import NotificationManager from 'main/notifications';
 
 import {UpdateNotifier} from './updateNotifier';
@@ -251,6 +254,53 @@ describe('main/updateNotifier', () => {
             } as unknown as Response);
             const updateNotifier = new UpdateNotifier();
             expect(await updateNotifier.performUpdateCheck(false)).toBeNull();
+        });
+
+        // The update check compares Antimatter versions (app.getVersion() against latest.txt), never the
+        // Mattermost-compatible version the app reports to servers
+        describe('compares Antimatter versions, not the Mattermost-compatible one', () => {
+            const mockLatest = (version: string) => net.fetch.mockResolvedValue({
+                ok: true,
+                text: jest.fn().mockResolvedValue(`${version}\n`),
+            } as unknown as Response);
+
+            it('offers 0.9.1 to 0.9.0, although 0.9.1 is lower than the compatible version', async () => {
+                app.getVersion.mockReturnValue('0.9.0');
+                mockLatest('0.9.1');
+                expect(await new UpdateNotifier().performUpdateCheck(false)).toEqual({version: '0.9.1'});
+            });
+
+            it('offers the 0.9.0 release to a 0.9.0 release candidate', async () => {
+                app.getVersion.mockReturnValue('0.9.0-rc-1');
+                mockLatest('0.9.0');
+                expect(await new UpdateNotifier().performUpdateCheck(false)).toEqual({version: '0.9.0'});
+            });
+
+            it('offers 0.9.0 to a manual 0.9.0-dev build', async () => {
+                app.getVersion.mockReturnValue('0.9.0-dev.42');
+                mockLatest('0.9.0');
+                expect(await new UpdateNotifier().performUpdateCheck(false)).toEqual({version: '0.9.0'});
+            });
+
+            it('offers nothing when 0.9.0 is the latest release', async () => {
+                app.getVersion.mockReturnValue('0.9.0');
+                mockLatest('0.9.0');
+                expect(await new UpdateNotifier().performUpdateCheck(false)).toBeNull();
+            });
+
+            it('offers nothing older than the running version', async () => {
+                app.getVersion.mockReturnValue('0.9.1');
+                mockLatest('0.9.0');
+                expect(await new UpdateNotifier().performUpdateCheck(false)).toBeNull();
+            });
+
+            it('shows the Antimatter version when there is no update', () => {
+                app.getVersion.mockReturnValue('0.9.0');
+                new UpdateNotifier().displayNoUpgrade();
+                expect(localizeMessage).toHaveBeenCalledWith('main.autoUpdater.noUpdate.detail', expect.any(String), {appName: 'Antimatter', version: '0.9.0'});
+                expect(localizeMessage).not.toHaveBeenCalledWith('main.autoUpdater.noUpdate.detail', expect.any(String), expect.objectContaining({version: COMPATIBLE_MATTERMOST_DESKTOP_VERSION}));
+                expect(MessageModal.showMessageModal).toHaveBeenCalled();
+            });
         });
     });
 

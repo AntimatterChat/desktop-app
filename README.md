@@ -179,7 +179,14 @@ npm run package:linux        # Linux packages, into release/ (also package:windo
 The [release workflow](.github/workflows/release.yml) builds every package on GitHub's runners: pushing a tag
 `v<version>` (e.g. `v1.2.0`, or `v1.2.0-rc.1` for a prerelease) publishes them on the GitHub release of that tag, with
 `SHA256SUMS` and the `latest.txt` file the app checks for updates. Run by hand from the Actions tab, it builds
-everything and keeps the files as workflow artifacts (and, if asked, as a draft prerelease).
+everything and keeps the files as workflow artifacts (and, if asked, as a draft prerelease) under the version
+`<package.json version>-dev.<run number>`.
+
+Antimatter Desktop versions start at 0.9.0. Servers, web apps and plugins compare the desktop version against
+Mattermost Desktop versions, so the app tells them the Mattermost Desktop version it is based on
+(`COMPATIBLE_MATTERMOST_DESKTOP_VERSION` in `src/common/compatibleVersion.ts`), in the `Mattermost/<version>` token of
+its user agent and in the desktop API; the `Antimatter/<version>` token and the app's own windows carry the real
+version.
 
 The app's icons are rendered from `resources/brand` by `scripts/generate_icons.py` (see `src/assets/linux/ICONS.md`).
 
