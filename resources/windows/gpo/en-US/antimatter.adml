@@ -5,7 +5,7 @@
 	<resources>
 		<stringTable>
 			<string id="SupportedAntimatter">Antimatter Desktop</string>
-			<string id="SupportedAntimatter64">Antimatter Desktop 6.4 or later</string>
+			<string id="SupportedAntimatter090">Antimatter Desktop 0.9.0 or later</string>
 			<string id="antimatter">Antimatter</string>
 
 			<string id="DefaultServerList">Servers (DefaultServerList)</string>
@@ -30,7 +30,7 @@ If this policy is disabled, they can only use the servers set by "Servers (Defau
 A machine policy wins over a user policy.</string>
 
 			<string id="EnableAutoUpdater">Notify about new versions (EnableAutoUpdater)</string>
-			<string id="EnableAutoUpdaterDescription">The app checks the Antimatter releases on GitHub and tells people when a new version is available, with a link to download it.
+			<string id="EnableAutoUpdaterDescription">The app checks the latest full release of Antimatter Desktop on GitHub (never a prerelease) and tells people when a new version is available, with a link to download it.
 
 If this policy is disabled, the app never checks for new versions and hides "Check for Updates": use it when you deploy the updates yourself.
 

@@ -7,7 +7,7 @@
 	<supportedOn>
 		<definitions>
 			<definition name="SupportedAntimatter" displayName="$(string.SupportedAntimatter)"/>
-			<definition name="SupportedAntimatter64" displayName="$(string.SupportedAntimatter64)"/>
+			<definition name="SupportedAntimatter090" displayName="$(string.SupportedAntimatter090)"/>
 		</definitions>
 	</supportedOn>
 	<categories>
@@ -23,7 +23,7 @@
 		</policy>
 		<policy name="DefaultUsername" class="Both" displayName="$(string.DefaultUsername)" explainText="$(string.DefaultUsernameDescription)" presentation="$(presentation.DefaultUsername)" key="Software\Policies\Antimatter">
 			<parentCategory ref="antimatter"/>
-			<supportedOn ref="SupportedAntimatter64"/>
+			<supportedOn ref="SupportedAntimatter090"/>
 			<elements>
 				<text id="DefaultUsername" valueName="DefaultUsername" maxLength="256"/>
 			</elements>

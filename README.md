@@ -38,8 +38,10 @@ Antimatter server on the first launch (for example `https://chat.example.com`).
 - **Linux** (x64 and arm64): see below.
 
 The builds are **not signed** yet. On Windows, SmartScreen warns about an unknown publisher: choose **More info**,
-then **Run anyway**. On macOS the app is signed ad hoc but not notarised: open it the first time with a right-click
-(or Control-click) on the app, then **Open**, or run `xattr -dr com.apple.quarantine /Applications/Antimatter.app`.
+then **Run anyway**. On macOS the app is signed ad hoc but not notarised, so macOS blocks it the first time. On
+macOS 15 and later, try to open it once, then go to **System Settings** › **Privacy & Security** and click **Open
+Anyway** next to the message about Antimatter. On older versions, Control-click the app, then choose **Open**. You
+can also run `xattr -dr com.apple.quarantine /Applications/Antimatter.app` instead.
 Every release has a `SHA256SUMS` file to check the downloads against (`sha256sum -c SHA256SUMS --ignore-missing`).
 
 ### Linux
@@ -54,7 +56,8 @@ Every release has a `SHA256SUMS` file to check the downloads against (`sha256sum
 
 The app checks the latest release on GitHub (the `latest.txt` file attached to it) and offers to download the new
 version: on Windows the `.exe` installer, which updates your copy in place. Turn it off in Settings, or for everyone
-with the `EnableAutoUpdater` policy.
+with the `EnableAutoUpdater` policy. It only sees full releases: prereleases (such as `1.2.0-rc.1`) are never offered,
+so install one by hand to try it.
 
 A copy installed with the `.msi` package doesn't check for updates: its users usually can't install software, and the
 administrator deploys the new versions. Setting the `EnableAutoUpdater` policy to 1 turns the checks on for it (the
@@ -80,9 +83,14 @@ the servers, a username to prefill, whether people can add servers of their own,
   and never over what someone typed. Environment variables between percent signs are replaced, so one value fits
   everyone: `%USERNAME%` (Windows) or `%USER%` (macOS, Linux) gives the account name, and
   `%USERNAME%@example.com` an email address that follows that pattern. If a variable isn't set, nothing is filled.
-- On Windows, a machine policy (`HKLM`) wins over a user policy (`HKCU`); server lists from both are combined. A
-  setting missing under the Antimatter key is read from `SOFTWARE\Policies\Mattermost`, so policies set for the
-  Mattermost desktop app keep working.
+- On Windows, a machine policy (`HKLM`) wins over a user policy (`HKCU`); server lists from both are combined.
+- Policies set for the Mattermost desktop app, under `SOFTWARE\Policies\Mattermost`, keep working, but the app falls
+  back to them place by place, not setting by setting. The three places are the values directly under the key
+  (`DefaultUsername`, `EnableServerManagement`, `EnableAutoUpdater`), the `DefaultServerList` subkey and the
+  `TrustedEmbeddedMediaOrigins` subkey. The app reads a place from the Mattermost key only when that place is empty
+  under the Antimatter key in both `HKLM` and `HKCU`. So one value directly under the Antimatter key, in either hive,
+  hides all the values directly under the Mattermost key: when you start setting Antimatter policies, move the
+  others across too.
 - The app reads the policies when it starts: restart it after a change.
 
 ### Windows: Group Policy and Intune

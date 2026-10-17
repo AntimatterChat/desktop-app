@@ -26,8 +26,9 @@ The download links can be found below, and the SHA-256 checksums of every file i
 These builds are **not signed**:
 
 - Windows: SmartScreen warns about an unknown publisher; choose **More info**, then **Run anyway**.
-- macOS: the app is signed ad hoc and not notarised, so macOS says it can't check it. Open it once with a right-click
-  (or Control-click) on the app, then **Open**, or run \`xattr -dr com.apple.quarantine /Applications/Antimatter.app\`.
+- macOS: the app is signed ad hoc and not notarised, so macOS says it can't check it. On macOS 15 and later, try to
+  open it once, then go to **System Settings** › **Privacy & Security** and click **Open Anyway**. On older versions,
+  Control-click the app, then choose **Open**. Or run \`xattr -dr com.apple.quarantine /Applications/Antimatter.app\`.
 - Linux: the packages and the Flatpak bundle aren't signed; check them against \`SHA256SUMS\`.
 
 #### Windows - installer (for your account, no administrator rights needed)

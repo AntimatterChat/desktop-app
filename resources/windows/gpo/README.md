@@ -12,8 +12,14 @@ Group Policy and Intune. They set values under `HKLM\SOFTWARE\Policies\Antimatte
 | Notify about new versions | `EnableAutoUpdater` (DWORD 0 or 1) | 0: never check for updates; 1: check, even for an MSI install |
 | Trusted embedded media origins | `TrustedEmbeddedMediaOrigins` subkey, JSON strings | Camera and microphone permissions for embedded content |
 
-A machine policy wins over a user policy. Server lists from both are combined. A setting missing under the Antimatter
-key is read from `SOFTWARE\Policies\Mattermost`, so policies set for the Mattermost desktop app keep working.
+A machine policy wins over a user policy. Server lists from both are combined.
+
+Policies set for the Mattermost desktop app, under `SOFTWARE\Policies\Mattermost`, keep working, but the app falls back
+to them place by place, not setting by setting. The three places are the values directly under the key
+(`DefaultUsername`, `EnableServerManagement`, `EnableAutoUpdater`), the `DefaultServerList` subkey and the
+`TrustedEmbeddedMediaOrigins` subkey. The app reads a place from the Mattermost key only when that place is empty under
+the Antimatter key in both `HKLM` and `HKCU`. So one value directly under the Antimatter key, in either hive, hides all
+the values directly under the Mattermost key: when you start setting Antimatter policies, move the others across too.
 
 `example-policies.reg` sets the same values without Group Policy (`reg import example-policies.reg`, as an
 administrator), for a test machine or a deployment script.
