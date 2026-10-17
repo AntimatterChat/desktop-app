@@ -58,6 +58,9 @@ export type DesktopAPI = {
 
     // Initialization
     isDev: () => Promise<boolean>;
+
+    // version: the Mattermost Desktop version the app is compatible with, which web content compares against
+    // Mattermost Desktop versions; Antimatter's own version is in the user agent's "Antimatter/<version>" token
     getAppInfo: () => Promise<{name: string; version: string}>;
     reactAppInitialized: () => void;
 

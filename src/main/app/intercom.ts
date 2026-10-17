@@ -8,6 +8,7 @@ import MainWindow from 'app/mainWindow/mainWindow';
 import ModalManager from 'app/mainWindow/modals/modalManager';
 import ServerViewState from 'app/serverHub';
 import {APP_MENU_WILL_CLOSE} from 'common/communication';
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import {ModalConstants} from 'common/constants';
 import {Logger} from 'common/log';
 import ServerManager from 'common/servers/serverManager';
@@ -22,10 +23,20 @@ import {handleAppBeforeQuit} from './app';
 
 const log = new Logger('App.Intercom');
 
+// The real Antimatter version, for the app's own windows (Settings, downloads, the version in the logs)
 export function handleAppVersion() {
     return {
         name: app.getName(),
         version: app.getVersion(),
+    };
+}
+
+// For web content (the desktop API's getAppInfo, which the web apps copy to window.desktop.version): the web apps and
+// plugins such as Calls compare this version against Mattermost Desktop versions, so it is the compatible one
+export function handleWebAppInfo() {
+    return {
+        name: app.getName(),
+        version: COMPATIBLE_MATTERMOST_DESKTOP_VERSION,
     };
 }
 

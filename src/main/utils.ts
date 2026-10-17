@@ -11,6 +11,7 @@ const exec = promisify(execOriginal);
 import type {BrowserWindow} from 'electron';
 import {app} from 'electron';
 
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import {MAILTO_PREFIX} from 'common/constants';
 import {TAB_BAR_HEIGHT} from 'common/utils/constants';
 
@@ -85,7 +86,9 @@ export function composeUserAgent(browserMode?: boolean) {
     }
 
     // The servers and their plugins recognise the desktop app by a last "Mattermost/<version>" token, keep it.
-    return `${filteredUserAgent.join(' ')} Antimatter/${app.getVersion()} Mattermost/${app.getVersion()}`;
+    // They compare that version against Mattermost Desktop versions, so it is the compatible one;
+    // the "Antimatter/<version>" token carries the real version.
+    return `${filteredUserAgent.join(' ')} Antimatter/${app.getVersion()} Mattermost/${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`;
 }
 
 export function isStringWithLength(string: unknown): boolean {

@@ -31,6 +31,7 @@ import {
     DOUBLE_CLICK_ON_WINDOW,
     TOGGLE_SECURE_INPUT,
     GET_APP_INFO,
+    GET_APP_VERSION,
     DEVELOPER_MODE_UPDATED,
     SERVER_ADDED,
     GET_FULL_SCREEN_STATUS,
@@ -87,6 +88,7 @@ import {
 import {
     handleMainWindowIsShown,
     handleAppVersion,
+    handleWebAppInfo,
     handleMentionNotification,
     handleOpenAppMenu,
     handleQuit,
@@ -264,7 +266,8 @@ function initializeInterCommunicationEventListeners() {
         Joi.boolean().required(),
         Joi.string().allow('').required(),
     ]));
-    ipcMain.handle(GET_APP_INFO, handleAppVersion);
+    ipcMain.handle(GET_APP_INFO, handleWebAppInfo);
+    ipcMain.handle(GET_APP_VERSION, handleAppVersion);
 
     if (process.platform !== 'darwin') {
         ipcMain.on(OPEN_APP_MENU, handleOpenAppMenu);

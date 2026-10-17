@@ -24,6 +24,7 @@ import {
     RELOAD_VIEW,
     UPDATE_SHORTCUT_MENU,
 } from 'common/communication';
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import Config from 'common/config';
 import type {Logger} from 'common/log';
 import ServerManager from 'common/servers/serverManager';
@@ -77,7 +78,8 @@ export class MattermostWebContentsView extends EventEmitter {
         this.options.webPreferences = {
             preload: DeveloperMode.get('browserOnly') ? undefined : preload,
             additionalArguments: [
-                `version=${app.getVersion()}`,
+                // The server's web content compares this against Mattermost Desktop versions
+                `version=${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`,
                 `appName=${app.name}`,
             ],
             ...options.webPreferences,

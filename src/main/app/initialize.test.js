@@ -3,14 +3,16 @@
 
 import path from 'path';
 
-import {app, session} from 'electron';
+import {app, ipcMain, session} from 'electron';
 
 import NavigationManager from 'app/navigationManager';
+import {GET_APP_INFO, GET_APP_VERSION} from 'common/communication';
 import Config from 'common/config';
 import parseArgs from 'main/ParseArgs';
 import LocalNetworkAccessManager from 'main/security/localNetworkAccess';
 
 import {initialize} from './initialize';
+import {handleAppVersion, handleWebAppInfo} from './intercom';
 import {clearAppCache, getDeeplinkingURL, wasUpdated} from './utils';
 
 jest.mock('fs', () => ({
@@ -147,6 +149,8 @@ jest.mock('main/e2e/appReady', () => ({
 }));
 jest.mock('main/app/intercom', () => ({
     handleMainWindowIsShown: jest.fn(),
+    handleAppVersion: jest.fn(),
+    handleWebAppInfo: jest.fn(),
 }));
 jest.mock('main/app/utils', () => ({
     clearAppCache: jest.fn(),
@@ -305,6 +309,25 @@ describe('main/app/initialize', () => {
 
     it('should initialize without errors', async () => {
         await initialize();
+    });
+
+    describe('app versions', () => {
+        it('answers the desktop API\'s getAppInfo with the Mattermost-compatible version', async () => {
+            await initialize();
+            expect(ipcMain.handle).toHaveBeenCalledWith(GET_APP_INFO, handleWebAppInfo);
+            expect(ipcMain.handle).not.toHaveBeenCalledWith(GET_APP_INFO, handleAppVersion);
+        });
+
+        it('answers the app\'s own windows with the real version', async () => {
+            await initialize();
+            expect(ipcMain.handle).toHaveBeenCalledWith(GET_APP_VERSION, handleAppVersion);
+        });
+
+        it('shows the real version in the About panel', async () => {
+            app.getVersion.mockReturnValue('0.9.0');
+            await initialize();
+            expect(app.setAboutPanelOptions).toHaveBeenCalledWith(expect.objectContaining({applicationVersion: '0.9.0'}));
+        });
     });
 
     describe('initializeArgs', () => {

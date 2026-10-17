@@ -1,8 +1,9 @@
 // Copyright (c) 2016-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {shell, clipboard} from 'electron';
+import {app, shell, clipboard} from 'electron';
 
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import Config from 'common/config';
 import ServerManager from 'common/servers/serverManager';
 import Diagnostics from 'main/diagnostics';
@@ -325,6 +326,20 @@ describe('app/menus/appMenu/help', () => {
             const menu = createHelpMenu();
             const versionItem = menu.submenu.find((item) => item.label === 'Desktop App Version 5.0.0');
             expect(versionItem).not.toBe(undefined);
+        });
+
+        it('should show the Antimatter version, not the Mattermost-compatible one', () => {
+            const getVersion = jest.spyOn(app, 'getVersion').mockReturnValue('0.9.0');
+            localizeMessage.mockImplementation((id, defaultMessage, values) => {
+                if (id === 'main.menus.app.help.versionString.desktop') {
+                    return `Desktop App Version ${values.version}`;
+                }
+                return id;
+            });
+            const menu = createHelpMenu();
+            expect(menu.submenu.find((item) => item.label === 'Desktop App Version 0.9.0')).not.toBe(undefined);
+            expect(menu.submenu.find((item) => item.label === `Desktop App Version ${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`)).toBe(undefined);
+            getVersion.mockRestore();
         });
 
         it('should call clipboard.writeText when version is clicked', () => {

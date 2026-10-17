@@ -1,11 +1,34 @@
 // Copyright (c) 2016-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {isRoutableAddress} from './utils';
+import {app} from 'electron';
+import semver from 'semver';
+
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
+
+import {composeUserAgent, isRoutableAddress} from './utils';
 
 jest.mock('electron', () => ({
     app: {},
 }));
+
+const ELECTRON_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Antimatter/0.9.0 Chrome/140.0.7339.41 Electron/38.1.0 Safari/537.36';
+
+// How the consumers read the desktop version from the user agent
+// The web apps' getDesktopVersion (@mattermost/shared/utils/user_agent, Fusion and classic)
+const webAppDesktopVersion = (userAgent: string) => /Mattermost\/(\d+\.\d+\.\d+)/gm.exec(userAgent)?.[1] || '';
+
+// The web apps' and the Calls plugin's isDesktopApp
+const isDesktopApp = (userAgent: string) => userAgent.includes('Mattermost') && userAgent.includes('Electron');
+
+// The server's GetDesktopAppVersion (channels/app/user_agent.go), used for MinimumDesktopAppVersion
+const serverDesktopVersion = (userAgent: string) => {
+    const idx = userAgent.indexOf('Mattermost/');
+    if (idx === -1 || (idx > 0 && userAgent[idx - 1] !== ' ')) {
+        return undefined;
+    }
+    return userAgent.slice(idx + 'Mattermost/'.length).split(/\s+/)[0];
+};
 
 describe('main/utils', () => {
     describe('isRoutableAddress', () => {
@@ -58,6 +81,58 @@ describe('main/utils', () => {
             it('rejects link-local addresses with a zone identifier', () => {
                 expect(isRoutableAddress('IPv6', 'fe80::1%utun0')).toBe(false);
             });
+        });
+    });
+
+    describe('composeUserAgent', () => {
+        const mockedApp = app as unknown as {getVersion: () => string; userAgentFallback: string};
+
+        beforeEach(() => {
+            mockedApp.getVersion = () => '0.9.0';
+            mockedApp.userAgentFallback = ELECTRON_USER_AGENT;
+        });
+
+        it('reports the Mattermost-compatible version in the Mattermost token and the real one in the Antimatter token', () => {
+            const userAgent = composeUserAgent();
+            expect(userAgent).toBe(`Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.41 Electron/38.1.0 Safari/537.36 Antimatter/0.9.0 Mattermost/${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`);
+            expect(userAgent).not.toContain('Mattermost/0.9.0');
+        });
+
+        it('keeps a single Antimatter token', () => {
+            expect(composeUserAgent().match(/Antimatter\//g)).toHaveLength(1);
+        });
+
+        it('carries a prerelease Antimatter version only in the Antimatter token', () => {
+            mockedApp.getVersion = () => '0.9.0-rc-1';
+            const userAgent = composeUserAgent();
+            expect(userAgent).toContain(' Antimatter/0.9.0-rc-1 ');
+            expect(userAgent.endsWith(` Mattermost/${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`)).toBe(true);
+        });
+
+        it('passes the web apps\' desktop version checks with app version 0.9.0', () => {
+            const userAgent = composeUserAgent();
+            expect(isDesktopApp(userAgent)).toBe(true);
+            const version = webAppDesktopVersion(userAgent);
+            expect(version).toBe(COMPATIBLE_MATTERMOST_DESKTOP_VERSION);
+
+            // browser_history.tsx needs >= 5.0.0, search.tsx and new_search.tsx >= 4.7.0
+            expect(semver.gte(version, '5.0.0')).toBe(true);
+            expect(semver.gte(version, '4.7.0')).toBe(true);
+
+            // The real version would fail them
+            expect(semver.gte(webAppDesktopVersion('Electron/38.1.0 Mattermost/0.9.0'), '5.0.0')).toBe(false);
+        });
+
+        it('gives the server the compatible version for MinimumDesktopAppVersion', () => {
+            const version = serverDesktopVersion(composeUserAgent());
+            expect(version).toBe(COMPATIBLE_MATTERMOST_DESKTOP_VERSION);
+            expect(semver.gte(version ?? '', '5.0.0')).toBe(true);
+        });
+
+        it('drops both app tokens in browser mode', () => {
+            const userAgent = composeUserAgent(true);
+            expect(userAgent).not.toContain('Antimatter');
+            expect(userAgent).not.toContain('Mattermost');
         });
     });
 });

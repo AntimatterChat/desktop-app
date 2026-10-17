@@ -187,6 +187,17 @@ Only use for modules needing a single global instance. Use regular classes when 
 
 Import singletons using PascalCase as if importing the class, since they represent the single instance: `import MyModule from 'app/myModule';`. For example: `import ServerManager from 'common/servers/serverManager';`, `import MainWindow from 'app/mainWindow/mainWindow';`.
 
+### Versions
+
+The app has two versions. `app.getVersion()` (package.json, 0.9.0 for the first beta) is Antimatter's own: show it to
+people (About, the Help menu, the update checker, the Settings window) and write it in the logs. Servers, the web apps
+and plugins such as Calls compare the desktop version against Mattermost Desktop versions to turn features on, so
+whatever reaches them reports `COMPATIBLE_MATTERMOST_DESKTOP_VERSION` (`src/common/compatibleVersion.ts`, the upstream
+version this fork is based on): the `Mattermost/<version>` user-agent token (the `Antimatter/<version>` token before
+it carries the real one), the desktop API's `getAppInfo` (`GET_APP_INFO`), the session attributes' `client_version`.
+The app's own windows get the real version from `window.desktop.getVersion` (`GET_APP_VERSION`). Raise the constant
+when an upstream release is merged.
+
 ### IPC channels
 
 1. Define the channel constant in `src/common/communication.ts`.

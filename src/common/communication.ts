@@ -1,7 +1,11 @@
 // Copyright (c) 2016-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+// The app's name and version for web content (the desktop API's getAppInfo): the Mattermost-compatible version
 export const GET_APP_INFO = 'get-app-info';
+
+// The app's name and real Antimatter version for the app's own windows (window.desktop.getVersion)
+export const GET_APP_VERSION = 'get-app-version';
 
 export const SWITCH_SERVER = 'switch-server';
 export const SWITCH_TAB = 'switch-tab';

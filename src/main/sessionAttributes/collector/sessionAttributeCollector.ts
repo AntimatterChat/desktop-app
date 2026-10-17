@@ -1,8 +1,7 @@
 // Copyright (c) 2016-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {app} from 'electron';
-
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import ServerManager from 'common/servers/serverManager';
 
 export class SessionAttributeCollector {
@@ -45,8 +44,9 @@ export class SessionAttributeCollector {
         return process.getSystemVersion();
     }
 
+    // Sent to the server, whose access policies compare it against Mattermost Desktop versions
     getClientVersion() {
-        return app.getVersion();
+        return COMPATIBLE_MATTERMOST_DESKTOP_VERSION;
     }
 
     getServerFQDN(serverId?: string) {

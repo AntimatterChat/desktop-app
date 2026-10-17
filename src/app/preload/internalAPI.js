@@ -86,7 +86,7 @@ import {
     SERVER_NAME_CHANGED,
     SERVER_SWITCHED,
     VALIDATE_SERVER_URL,
-    GET_APP_INFO,
+    GET_APP_VERSION,
     OPEN_NOTIFICATION_PREFERENCES,
     OPEN_WINDOWS_CAMERA_PREFERENCES,
     OPEN_WINDOWS_MICROPHONE_PREFERENCES,
@@ -207,7 +207,7 @@ contextBridge.exposeInMainWorld('desktop', {
     getIsViewLimitReached: () => ipcRenderer.invoke(GET_IS_VIEW_LIMIT_REACHED),
 
     getConfiguration: () => ipcRenderer.invoke(GET_CONFIGURATION),
-    getVersion: () => ipcRenderer.invoke(GET_APP_INFO),
+    getVersion: () => ipcRenderer.invoke(GET_APP_VERSION),
     getDarkMode: () => ipcRenderer.invoke(GET_DARK_MODE),
     requestHasDownloads: () => ipcRenderer.invoke(REQUEST_HAS_DOWNLOADS),
     getFullScreenStatus: () => ipcRenderer.invoke(GET_FULL_SCREEN_STATUS),

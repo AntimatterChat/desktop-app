@@ -8,6 +8,7 @@ import {ipcMain} from 'electron';
 import AppState from 'common/appState';
 import Config from 'common/config';
 import {BROWSER_HISTORY_PUSH, LOAD_FAILED, SERVER_URL_CHANGED, UPDATE_SHORTCUT_MENU, UPDATE_TARGET_URL} from 'common/communication';
+import {COMPATIBLE_MATTERMOST_DESKTOP_VERSION} from 'common/compatibleVersion';
 import {MattermostServer} from 'common/servers/MattermostServer';
 import ServerManager from 'common/servers/serverManager';
 import {MattermostView, ViewType} from 'common/views/MattermostView';
@@ -135,6 +136,16 @@ const server = new MattermostServer({name: 'server_name', url: 'http://server-1.
 const view = new MattermostView(server, ViewType.TAB);
 
 describe('main/views/MattermostWebContentsView', () => {
+    describe('constructor', () => {
+        it('gives the server\'s web content the Mattermost-compatible version, not the Antimatter one', () => {
+            const window = {on: jest.fn(), webContents: {send: jest.fn()}, isDestroyed: jest.fn(() => false)};
+            const mattermostView = new MattermostWebContentsView(view, {}, window);
+            const args = mattermostView.options.webPreferences.additionalArguments;
+            expect(args).toContain(`version=${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`);
+            expect(args).not.toContain('version=5.0.0');
+        });
+    });
+
     describe('load', () => {
         const window = {on: jest.fn(), webContents: {send: jest.fn()}, isDestroyed: jest.fn(() => false)};
         const mattermostView = new MattermostWebContentsView(view, {}, window);
