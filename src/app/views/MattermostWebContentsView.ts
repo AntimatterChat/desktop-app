@@ -78,8 +78,7 @@ export class MattermostWebContentsView extends EventEmitter {
         this.options.webPreferences = {
             preload: DeveloperMode.get('browserOnly') ? undefined : preload,
             additionalArguments: [
-                // The server's web content compares this against Mattermost Desktop versions
-                `version=${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`,
+                `version=${COMPATIBLE_MATTERMOST_DESKTOP_VERSION}`, // web content compares Mattermost Desktop versions
                 `appName=${app.name}`,
             ],
             ...options.webPreferences,

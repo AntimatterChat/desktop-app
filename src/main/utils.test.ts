@@ -16,7 +16,7 @@ const ELECTRON_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 
 
 // How the consumers read the desktop version from the user agent
 // The web apps' getDesktopVersion (@mattermost/shared/utils/user_agent, Fusion and classic)
-const webAppDesktopVersion = (userAgent: string) => /Mattermost\/(\d+\.\d+\.\d+)/gm.exec(userAgent)?.[1] || '';
+const webAppDesktopVersion = (userAgent: string) => (/Mattermost\/(\d+\.\d+\.\d+)/gm).exec(userAgent)?.[1] || '';
 
 // The web apps' and the Calls plugin's isDesktopApp
 const isDesktopApp = (userAgent: string) => userAgent.includes('Mattermost') && userAgent.includes('Electron');
