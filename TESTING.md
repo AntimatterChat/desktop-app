@@ -14,5 +14,5 @@ To test a pre-release:
 2. Add your Antimatter server (or a test server) and log in.
 3. Check the server management (adding, editing, removing and reordering servers), the settings, notifications,
    downloads, deep links (`antimatter://`), calls and screen sharing, and the tray icon.
-4. File an [issue](https://github.com/AntimatterChat/desktop-app/issues/new) for each bug found, with the steps to
+4. File an [issue](https://github.com/AntimatterChat/community/issues/new) for each bug found, with the steps to
    reproduce it, the app and server versions and your operating system.

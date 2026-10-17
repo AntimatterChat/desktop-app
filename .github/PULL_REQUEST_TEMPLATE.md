@@ -9,7 +9,7 @@ A brief description of what this pull request does.
 <!--
 If this pull request addresses an issue, please link it, e.g.
 
-  Fixes https://github.com/AntimatterChat/desktop-app/issues/XXXXX
+  Fixes https://github.com/AntimatterChat/community/issues/XXXXX
 -->
 
 #### Checklist

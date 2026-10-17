@@ -4,12 +4,12 @@ Thank you for your interest in contributing to the Antimatter Desktop App!
 
 ## Issues
 
-Before filing an issue on [GitHub](https://github.com/AntimatterChat/desktop-app/issues), please check a few things.
+Before filing an issue on [GitHub](https://github.com/AntimatterChat/community/issues), please check a few things.
 
 ### Does it reproduce in a web browser?
 The desktop app is based on Electron, which embeds Chromium, and shows your server's web app. If the problem also
 happens in a web browser, it is most likely an issue with the server or its web app: please report it to the
-[Antimatter server repository](https://github.com/AntimatterChat/antimatter/issues).
+[Antimatter community](https://github.com/AntimatterChat/community/issues), saying it happens in the browser too.
 
 ### Try "Clear Cache and Reload"
 Some issues go away by reloading the server in the app: press `CMD/CTRL+SHIFT+R`, or select
