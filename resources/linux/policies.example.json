@@ -1,0 +1,9 @@
+{
+    "DefaultServerList": [
+        {"name": "Example", "url": "https://chat.example.com"}
+    ],
+    "DefaultUsername": "%USER%",
+    "EnableServerManagement": false,
+    "EnableAutoUpdater": false,
+    "TrustedEmbeddedMediaOrigins": []
+}

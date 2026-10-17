@@ -1,26 +1,40 @@
-# Developer guide for using Group Policy Objects (GPO) (Windows 10 Pro)
+# Group Policy templates for Antimatter Desktop
 
-GPOs are used to pre-configure servers, autoUpdater and server management
+`antimatter.admx` and `en-US/antimatter.adml` are the administrative templates of the Antimatter desktop app, for
+Group Policy and Intune. They set values under `HKLM\SOFTWARE\Policies\Antimatter` (computer configuration) or
+`HKCU\SOFTWARE\Policies\Antimatter` (user configuration). The installed app also has them, in its `gpo` folder.
 
-You can read more about GPOs [here](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/policy/group-policy-objects)
+| Policy | Registry value | What it does |
+|---|---|---|
+| Servers | `DefaultServerList` subkey, one string value per server: name = tab name, data = URL | Adds servers people can't remove |
+| Username to prefill | `DefaultUsername` (string, `%USERNAME%` and other variables are replaced) | Fills the username on the login page of those servers |
+| Let people add and remove servers | `EnableServerManagement` (DWORD 0 or 1) | 0: only the servers above |
+| Notify about new versions | `EnableAutoUpdater` (DWORD 0 or 1) | 0: never check for updates; 1: check, even for an MSI install |
+| Trusted embedded media origins | `TrustedEmbeddedMediaOrigins` subkey, JSON strings | Camera and microphone permissions for embedded content |
 
-## How to use them on your windows machine for development
+A machine policy wins over a user policy. Server lists from both are combined. A setting missing under the Antimatter
+key is read from `SOFTWARE\Policies\Mattermost`, so policies set for the Mattermost desktop app keep working.
 
-1. Copy the files from this directory (`resources/windows/gpo`) to `C:\Windows\PolicyDefinitions` - the file `antimatter.admx` should go in `C:\Windows\PolicyDefinitions` and the file `antimatter.adml` should go in `C:\Windows\PolicyDefinitions/en-US`.
-2. Press `Win` + `R` to open the "Run" box
-3. Type `gpedit.msc` to open the Group Policy Editor
-4. Select "Administrative Templates" => "Antimatter" - either in "Computer Configuration" or "User Configuration" it shouldn't matter.
-5. On the right side panel Select the Policy you want to update, eg, "DefaultServerList" then click the "Edit policy setting" hyperlink/button.
-6. Select the "Enabled" radio checkbox and click the "Show" button under Options.
-7. A new windows opens where you can add Multiple values for pre-configured servers, where `value name` is the Server Name and `value` is the Server URL.
-Example:   
+`example-policies.reg` sets the same values without Group Policy (`reg import example-policies.reg`, as an
+administrator), for a test machine or a deployment script.
 
-| Value Name | Value                            |
-|------------|----------------------------------|
-| Example    | <https://chat.example.com>         |
-8. Now if you open your Antimatter desktop application you should be able to see the server in the server dropdown
+## Group Policy (domain)
 
----
+1. Copy `antimatter.admx` to the central store, `\\<domain>\SYSVOL\<domain>\Policies\PolicyDefinitions`, and
+   `en-US\antimatter.adml` to its `en-US` folder (or, on a single computer, to `C:\Windows\PolicyDefinitions`).
+2. In the Group Policy Management Editor, open **Computer Configuration** (or **User Configuration**) >
+   **Policies** > **Administrative Templates** > **Antimatter**.
+3. Edit a policy, choose **Enabled**, and fill it in. For **Servers**, click **Show** and add one line per server:
+   the value name is the tab name, the value is the server URL (`https://chat.example.com`).
 
-### Windows 10 Home:
-The `gpedit.msc` is not available for the Home edition but, there is an open-source tool called [Policy Plus](https://github.com/Fleex255/PolicyPlus) that can help with that.
+## Intune
+
+**Devices** > **Configuration** > **Import ADMX**: import `antimatter.admx` with `en-US\antimatter.adml`, then create
+a profile from **Templates** > **Imported Administrative templates** and set the Antimatter policies.
+
+## A single computer
+
+`gpedit.msc` (Windows Pro and Enterprise) shows the templates once they are in `C:\Windows\PolicyDefinitions`. Windows
+Home has no `gpedit.msc`: use `example-policies.reg`, or the open source [Policy Plus](https://github.com/Fleex255/PolicyPlus).
+
+Restart the app after a policy change: it reads the policies when it starts.

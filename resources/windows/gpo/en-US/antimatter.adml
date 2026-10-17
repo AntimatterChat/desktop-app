@@ -1,31 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<policyDefinitionResources revision="0.1" schemaVersion="1.0">
-	<displayName/>
-	<description/>
-	<resources >
-		<stringTable >
-			<string id="RequiresAntimatter43">Requires Antimatter Desktop 4.3 or later</string>
-            <string id="RequiresAntimatter51">Requires Antimatter Desktop 5.1 or later</string>
+<policyDefinitionResources revision="1.0" schemaVersion="1.0">
+	<displayName>Antimatter Desktop</displayName>
+	<description>Policies of the Antimatter desktop app</description>
+	<resources>
+		<stringTable>
+			<string id="SupportedAntimatter">Antimatter Desktop</string>
+			<string id="SupportedAntimatter64">Antimatter Desktop 6.4 or later</string>
 			<string id="antimatter">Antimatter</string>
-			
-      		<string id="EnableAutoUpdater">EnableAutoUpdater</string>
-			<string id="EnableAutoUpdaterDescription">If this policy is enabled, users will receive notifications when new versions of the desktop app are available. System Administrator privileges on the computer are required to install the update.</string>
-     
-			<string id="EnableServerManagement">EnableServerManagement</string>
-			<string id="EnableServerManagementDescription">If this policy is enabled, users can add or remove servers in their app settings, even if default servers are configured in DefaultServerList.
 
-If this policy is disabled, the Server Management section is hidden in the app settings and only servers defined by Group Policy can be used.</string>
-			<string id="DefaultServerList">DefaultServerList</string>
-			<string id="DefaultServerListDescription">If this policy is enabled, you can define one or more Antimatter servers that will be pre-configured for users when they launch the app. "Value name" represents the name of the corresponding server tab and "Value" is the URL of the Antimatter server.</string>
-			<string id="TrustedEmbeddedMediaOrigins">TrustedEmbeddedMediaOrigins</string>
-			<string id="TrustedEmbeddedMediaOriginsDescription">If this policy is enabled, you can define one or more embedded origins that may reuse media permissions granted to an Antimatter server origin. "Value name" must be unique and "Value" must be a JSON object with serverOrigin and embeddedOrigin string properties, for example {"serverOrigin":"https://chat.example.com","embeddedOrigin":"https://meet.example.com"}.</string>
+			<string id="DefaultServerList">Servers (DefaultServerList)</string>
+			<string id="DefaultServerListDescription">Adds one or more Antimatter servers to the app. Each server has a "Value name", the name of its tab, and a "Value", the URL of the server (for example https://chat.example.com).
+
+The people using the app can't remove or edit these servers. To stop them adding servers of their own, disable "Let people add and remove servers (EnableServerManagement)".
+
+When both the computer and the user configuration set servers, the app shows all of them.</string>
+
+			<string id="DefaultUsername">Username to prefill (DefaultUsername)</string>
+			<string id="DefaultUsernameDescription">Prefills the username field of the login page of the servers set by "Servers (DefaultServerList)". The app never fills it on servers people added themselves, never overwrites what someone typed, and people can still change it.
+
+Environment variables between percent signs are replaced, so one value fits every person: %USERNAME% gives their Windows username, and %USERNAME%@example.com their email address if it follows that pattern. If a variable isn't set, the app doesn't prefill anything.
+
+A machine policy wins over a user policy.</string>
+
+			<string id="EnableServerManagement">Let people add and remove servers (EnableServerManagement)</string>
+			<string id="EnableServerManagementDescription">If this policy is enabled or not configured, people can add, edit and remove their own servers in the app, next to the ones set by "Servers (DefaultServerList)".
+
+If this policy is disabled, they can only use the servers set by "Servers (DefaultServerList)": the app hides the server management options.
+
+A machine policy wins over a user policy.</string>
+
+			<string id="EnableAutoUpdater">Notify about new versions (EnableAutoUpdater)</string>
+			<string id="EnableAutoUpdaterDescription">The app checks the Antimatter releases on GitHub and tells people when a new version is available, with a link to download it.
+
+If this policy is disabled, the app never checks for new versions and hides "Check for Updates": use it when you deploy the updates yourself.
+
+If this policy is enabled, the app checks for new versions, including a copy installed with the MSI package (the download is then the MSI, which needs administrator rights).
+
+If this policy is not configured, a copy installed with the .exe installer (for one person) checks for new versions, and a copy installed with the MSI package (for every user of the computer) doesn't.</string>
+
+			<string id="TrustedEmbeddedMediaOrigins">Trusted embedded media origins (TrustedEmbeddedMediaOrigins)</string>
+			<string id="TrustedEmbeddedMediaOriginsDescription">Lets embedded content (for example a video conferencing page shown inside a server) reuse the camera and microphone permissions granted to an Antimatter server. "Value name" must be unique and "Value" must be a JSON object with serverOrigin and embeddedOrigin string properties, for example {"serverOrigin":"https://chat.example.com","embeddedOrigin":"https://meet.example.com"}.</string>
 		</stringTable>
 		<presentationTable>
 			<presentation id="DefaultServerList">
-				<listBox refId="DefaultServerList">List of default Antimatter servers:</listBox>
+				<listBox refId="DefaultServerList">Servers (value name: tab name, value: server URL):</listBox>
+			</presentation>
+			<presentation id="DefaultUsername">
+				<textBox refId="DefaultUsername">
+					<label>Username:</label>
+				</textBox>
 			</presentation>
 			<presentation id="TrustedEmbeddedMediaOrigins">
-				<listBox refId="TrustedEmbeddedMediaOrigins">List of trusted embedded media origins:</listBox>
+				<listBox refId="TrustedEmbeddedMediaOrigins">Trusted embedded media origins:</listBox>
 			</presentation>
 		</presentationTable>
 	</resources>

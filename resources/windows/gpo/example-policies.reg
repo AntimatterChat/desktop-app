@@ -1,0 +1,17 @@
+REGEDIT4
+
+; Example machine policies for the Antimatter desktop app, the same values the ADMX templates write.
+; Edit the values, then import with: reg import example-policies.reg (as an administrator).
+; Use HKEY_CURRENT_USER instead to set them for one user only (a machine policy wins).
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Antimatter]
+; 0: people can only use the servers below; 1: they can add their own
+"EnableServerManagement"=dword:00000000
+; 0: never check for new versions (you deploy the updates); 1: check, even for an MSI install
+"EnableAutoUpdater"=dword:00000000
+; Prefilled on the login page of the servers below; %USERNAME% is replaced by the Windows username
+"DefaultUsername"="%USERNAME%"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Antimatter\DefaultServerList]
+; "Tab name"="Server URL", one line per server
+"Example"="https://chat.example.com"

@@ -22,8 +22,8 @@ from version 9.4.
 * Deep links: `antimatter://` links open in the app (so do the `mattermost://` links people already have)
 * Calls and voice rooms with screen sharing, in a dedicated widget window
 * Runs in the background, with a tray icon, to reduce the number of open windows
-* Administrator policies: Windows group policies and macOS managed preferences (see `resources/windows/gpo` and
-  `resources/mac/mdm`)
+* Managed deployments: servers, username, server management and update checks set by Group Policy, Intune, SCCM,
+  macOS MDM profiles or a Linux policy file (see [Deploying in a company](#deploying-in-a-company))
 
 ## Install
 
@@ -31,8 +31,9 @@ Download the installer for your system from the
 [releases page](https://github.com/AntimatterChat/desktop-app/releases), run it, then enter the URL of your
 Antimatter server on the first launch (for example `https://chat.example.com`).
 
-- **Windows** (x64 and arm64): the `.msi` installer (for all users), the `.exe` installer (for your account only), or
-  the `.zip` archive.
+- **Windows** (x64 and arm64): the `.exe` installer (for your account, no administrator rights needed: the one to
+  pick), the `.msi` package (for every user of the computer, for companies: see
+  [Deploying in a company](#deploying-in-a-company)), or the `.zip` archive.
 - **macOS**: the `.dmg` disk image (`universal`, or `arm64` for Apple silicon and `x64` for Intel Macs), or the `.zip`.
 - **Linux** (x64 and arm64): see below.
 
@@ -52,7 +53,86 @@ Every release has a `SHA256SUMS` file to check the downloads against (`sha256sum
 ### Updates
 
 The app checks the latest release on GitHub (the `latest.txt` file attached to it) and offers to download the new
-version. Turn it off in Settings, or for everyone with the `EnableAutoUpdater` policy.
+version: on Windows the `.exe` installer, which updates your copy in place. Turn it off in Settings, or for everyone
+with the `EnableAutoUpdater` policy.
+
+A copy installed with the `.msi` package doesn't check for updates: its users usually can't install software, and the
+administrator deploys the new versions. Setting the `EnableAutoUpdater` policy to 1 turns the checks on for it (the
+download is then the `.msi`).
+
+## Deploying in a company
+
+The `.msi` package installs the app for every user of a computer, in `C:\Program Files\Antimatter`, which suits
+SCCM (Configuration Manager), Intune and Group Policy software installation. The app can be configured centrally:
+the servers, a username to prefill, whether people can add servers of their own, and the update checks.
+
+### The settings
+
+| Policy | Windows registry value (`HKLM` or `HKCU\SOFTWARE\Policies\Antimatter`) | macOS and Linux key | What it does |
+|---|---|---|---|
+| Servers | `DefaultServerList` subkey: one string value per server, name = tab name, data = URL | `DefaultServerList`: array of `{name, url}` | Adds servers people can't remove |
+| Username to prefill | `DefaultUsername` (string) | `DefaultUsername` (string) | Fills the username on the login page of those servers |
+| Server management | `EnableServerManagement` (DWORD 0 or 1) | `EnableServerManagement` (boolean) | 0 / `false`: people can only use the servers set by policy |
+| Update checks | `EnableAutoUpdater` (DWORD 0 or 1) | `EnableAutoUpdater` (boolean) | 0 / `false`: never check for new versions; 1 / `true`: check, even for an MSI install |
+| Trusted embedded media | `TrustedEmbeddedMediaOrigins` subkey: JSON strings | `TrustedEmbeddedMediaOrigins`: array of `{serverOrigin, embeddedOrigin}` | Camera and microphone permissions for embedded content |
+
+- **The username** is only filled on the login page of the servers set by policy, never on a server people added,
+  and never over what someone typed. Environment variables between percent signs are replaced, so one value fits
+  everyone: `%USERNAME%` (Windows) or `%USER%` (macOS, Linux) gives the account name, and
+  `%USERNAME%@example.com` an email address that follows that pattern. If a variable isn't set, nothing is filled.
+- On Windows, a machine policy (`HKLM`) wins over a user policy (`HKCU`); server lists from both are combined. A
+  setting missing under the Antimatter key is read from `SOFTWARE\Policies\Mattermost`, so policies set for the
+  Mattermost desktop app keep working.
+- The app reads the policies when it starts: restart it after a change.
+
+### Windows: Group Policy and Intune
+
+The administrative templates are in [`resources/windows/gpo`](resources/windows/gpo) (and in the `gpo` folder of the
+installed app): copy `antimatter.admx` and `en-US/antimatter.adml` to the domain's central store
+(`\\<domain>\SYSVOL\<domain>\Policies\PolicyDefinitions`), then find the policies under **Administrative
+Templates** > **Antimatter**, in the computer or the user configuration. In Intune, import them in **Devices** >
+**Configuration** > **Import ADMX**, then create a profile from the imported template.
+[`example-policies.reg`](resources/windows/gpo/example-policies.reg) sets the same values from a script.
+
+### Windows: silent install with the MSI (SCCM, Intune, scripts)
+
+The MSI takes public properties that write the same machine policies (`HKLM\SOFTWARE\Policies\Antimatter`):
+
+```powershell
+msiexec /i antimatter-desktop-<version>-win-x64.msi /qn SERVERURL=https://chat.example.com SERVERNAME=Chat DEFAULTUSERNAME='%USERNAME%' AUTOUPDATE=0 SERVERMANAGEMENT=0
+```
+
+| Property | Writes | Default |
+|---|---|---|
+| `SERVERURL` | a server in `DefaultServerList` | none |
+| `SERVERNAME` | the name of its tab | `Antimatter` |
+| `DEFAULTUSERNAME` | `DefaultUsername`; pass `%USERNAME%` as is, the app replaces it for each person (single quotes in PowerShell, `%%USERNAME%%` in a `.bat` file, so the shell running the install doesn't replace it with its own account) | none |
+| `AUTOUPDATE` | `EnableAutoUpdater` (0 or 1) | not set: an MSI install doesn't check for updates |
+| `SERVERMANAGEMENT` | `EnableServerManagement` (0 or 1) | not set: people can add servers |
+
+A property that isn't given writes nothing, so it doesn't override Group Policy. Uninstalling the MSI removes the
+values it wrote, and so does upgrading it: give the same properties to every version's install (SCCM and Intune keep
+the command line of the deployment), or set the policies with Group Policy or Intune instead. To uninstall:
+`msiexec /x antimatter-desktop-<version>-win-x64.msi /qn`. Installing the MSI removes the `.exe` copy of the user
+running the install, if there is one.
+
+The Intune "Windows app (Win32)" type takes the same command line; for the "Line-of-business app" type, add the
+properties to its command-line arguments.
+
+### macOS: MDM
+
+The app reads the managed preferences of its bundle id, `chat.antimatter.desktop`, with the keys above.
+[`resources/mac/mdm/antimatter.mobileconfig`](resources/mac/mdm/antimatter.mobileconfig) is an example profile for
+Jamf, Intune, Kandji and the others; most of them also take the keys alone as a custom settings payload for
+`chat.antimatter.desktop` ([`example-managed-preferences.plist`](resources/mac/mdm/example-managed-preferences.plist)).
+
+### Linux: policy file
+
+The app reads `/etc/antimatter-desktop/policies.json`, with the keys above
+([example](resources/linux/policies.example.json)). Deploy it with Ansible, Puppet or any configuration tool, owned by
+root and readable by everyone. The Flatpak needs to see the host's `/etc`:
+`sudo flatpak override --system --filesystem=host-etc:ro chat.antimatter.desktop`. See
+[`resources/linux`](resources/linux/README.md).
 
 ## Configuration
 

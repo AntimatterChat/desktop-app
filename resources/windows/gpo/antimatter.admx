@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<policyDefinitions revision="0.1" schemaVersion="1.0">
+<policyDefinitions revision="1.0" schemaVersion="1.0">
 	<policyNamespaces>
 		<target prefix="antimatter" namespace="Antimatter.Policies"/>
 	</policyNamespaces>
-	<resources minRequiredRevision="0.1"/>
+	<resources minRequiredRevision="1.0"/>
 	<supportedOn>
 		<definitions>
-			<definition name="RequiresAntimatter43" displayName="$(string.RequiresAntimatter43)"/>
-            <definition name="RequiresAntimatter51" displayName="$(string.RequiresAntimatter51)"/>
+			<definition name="SupportedAntimatter" displayName="$(string.SupportedAntimatter)"/>
+			<definition name="SupportedAntimatter64" displayName="$(string.SupportedAntimatter64)"/>
 		</definitions>
 	</supportedOn>
 	<categories>
 		<category displayName="$(string.antimatter)" name="antimatter"></category>
 	</categories>
 	<policies>
-    	<policy name="EnableAutoUpdater" class="Machine" displayName="$(string.EnableAutoUpdater)" explainText="$(string.EnableAutoUpdaterDescription)" key="Software\Policies\Antimatter" valueName="EnableAutoUpdater">
+		<policy name="DefaultServerList" class="Both" displayName="$(string.DefaultServerList)" explainText="$(string.DefaultServerListDescription)" presentation="$(presentation.DefaultServerList)" key="Software\Policies\Antimatter">
 			<parentCategory ref="antimatter"/>
-			<supportedOn ref="RequiresAntimatter51"/>
-			<enabledValue>
-				<decimal value="1"/>
-			</enabledValue>
-			<disabledValue>
-				<decimal value="0"/>
-			</disabledValue>
+			<supportedOn ref="SupportedAntimatter"/>
+			<elements>
+				<list id="DefaultServerList" key="Software\Policies\Antimatter\DefaultServerList" additive="true" explicitValue="true"/>
+			</elements>
+		</policy>
+		<policy name="DefaultUsername" class="Both" displayName="$(string.DefaultUsername)" explainText="$(string.DefaultUsernameDescription)" presentation="$(presentation.DefaultUsername)" key="Software\Policies\Antimatter">
+			<parentCategory ref="antimatter"/>
+			<supportedOn ref="SupportedAntimatter64"/>
+			<elements>
+				<text id="DefaultUsername" valueName="DefaultUsername" maxLength="256"/>
+			</elements>
 		</policy>
 		<policy name="EnableServerManagement" class="Both" displayName="$(string.EnableServerManagement)" explainText="$(string.EnableServerManagementDescription)" key="Software\Policies\Antimatter" valueName="EnableServerManagement">
 			<parentCategory ref="antimatter"/>
-			<supportedOn ref="RequiresAntimatter43"/>
+			<supportedOn ref="SupportedAntimatter"/>
 			<enabledValue>
 				<decimal value="1"/>
 			</enabledValue>
@@ -34,18 +38,21 @@
 				<decimal value="0"/>
 			</disabledValue>
 		</policy>
-		<policy name="DefaultServerList" class="Both" displayName="$(string.DefaultServerList)" explainText="$(string.DefaultServerListDescription)" presentation="$(presentation.DefaultServerList)" key="Software\Policies\Antimatter">
-			<parentCategory ref="antimatter" />
-			<supportedOn ref="RequiresAntimatter43" />
-			<elements>
-				<list id="DefaultServerList" key="Software\Policies\Antimatter\DefaultServerList" additive="true" explicitValue="true" />
-			</elements>
+		<policy name="EnableAutoUpdater" class="Machine" displayName="$(string.EnableAutoUpdater)" explainText="$(string.EnableAutoUpdaterDescription)" key="Software\Policies\Antimatter" valueName="EnableAutoUpdater">
+			<parentCategory ref="antimatter"/>
+			<supportedOn ref="SupportedAntimatter"/>
+			<enabledValue>
+				<decimal value="1"/>
+			</enabledValue>
+			<disabledValue>
+				<decimal value="0"/>
+			</disabledValue>
 		</policy>
 		<policy name="TrustedEmbeddedMediaOrigins" class="Both" displayName="$(string.TrustedEmbeddedMediaOrigins)" explainText="$(string.TrustedEmbeddedMediaOriginsDescription)" presentation="$(presentation.TrustedEmbeddedMediaOrigins)" key="Software\Policies\Antimatter">
-			<parentCategory ref="antimatter" />
-			<supportedOn ref="RequiresAntimatter51" />
+			<parentCategory ref="antimatter"/>
+			<supportedOn ref="SupportedAntimatter"/>
 			<elements>
-				<list id="TrustedEmbeddedMediaOrigins" key="Software\Policies\Antimatter\TrustedEmbeddedMediaOrigins" additive="true" explicitValue="true" />
+				<list id="TrustedEmbeddedMediaOrigins" key="Software\Policies\Antimatter\TrustedEmbeddedMediaOrigins" additive="true" explicitValue="true"/>
 			</elements>
 		</policy>
 	</policies>

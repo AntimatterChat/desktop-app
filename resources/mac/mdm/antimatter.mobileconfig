@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Example configuration profile for the Antimatter desktop app: edit the values (and give the profile your own
+  PayloadIdentifier and PayloadUUID values), then deploy it with your MDM (Jamf, Intune, Kandji, Mosyle...), or
+  install it by hand on a test Mac from System Settings > Privacy & Security > Profiles.
+  The settings go to the app's preference domain, chat.antimatter.desktop. See README.md next to this file.
+-->
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadType</key>
+			<string>chat.antimatter.desktop</string>
+			<key>PayloadIdentifier</key>
+			<string>com.example.antimatter.desktop.settings</string>
+			<key>PayloadUUID</key>
+			<string>E11DCD33-AF82-4FB6-B774-5BA5969B4992</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadDisplayName</key>
+			<string>Antimatter Desktop settings</string>
+
+			<!-- Servers people can't remove: name (the tab name) and url -->
+			<key>DefaultServerList</key>
+			<array>
+				<dict>
+					<key>name</key>
+					<string>Example</string>
+					<key>url</key>
+					<string>https://chat.example.com</string>
+				</dict>
+			</array>
+
+			<!-- Prefilled on the login page of the servers above; %USER% is replaced by the macOS account name -->
+			<key>DefaultUsername</key>
+			<string>%USER%</string>
+
+			<!-- false: people can only use the servers above -->
+			<key>EnableServerManagement</key>
+			<false/>
+
+			<!-- false: never check for new versions (you deploy the updates) -->
+			<key>EnableAutoUpdater</key>
+			<false/>
+		</dict>
+	</array>
+	<key>PayloadDisplayName</key>
+	<string>Antimatter Desktop</string>
+	<key>PayloadDescription</key>
+	<string>Servers and settings of the Antimatter desktop app</string>
+	<key>PayloadIdentifier</key>
+	<string>com.example.antimatter.desktop</string>
+	<key>PayloadOrganization</key>
+	<string>Example</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>C088DFEC-153F-4A9F-A10C-0CFAAA168F8D</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

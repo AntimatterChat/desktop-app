@@ -11,6 +11,8 @@
 			<string>https://chat.example.com</string>
 		</dict>
 	</array>
+	<key>DefaultUsername</key>
+	<string>%USER%</string>
 	<key>EnableServerManagement</key>
 	<true/>
 	<key>EnableAutoUpdater</key>
