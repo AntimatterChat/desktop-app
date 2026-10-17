@@ -6,6 +6,9 @@ import {FormattedMessage} from 'react-intl';
 
 import ErrorView from 'renderer/components/ErrorView';
 
+// The oldest Antimatter server this app works with; any Mattermost server from 9.4 on works too.
+const MIN_ANTIMATTER_VERSION = '0.9.0';
+
 type Props = {
     appName?: string;
     url?: string;
@@ -38,9 +41,10 @@ export default function IncompatibleErrorView({appName, url, handleLink, handleU
             <li>
                 <FormattedMessage
                     id='renderer.components.errorView.troubleshooting.upgradeServer'
-                    defaultMessage='<link>Upgrade the server</link> to {appName}, or to Mattermost Server v9.4 or later.'
+                    defaultMessage='<link>Upgrade the server</link> to {appName} {minVersion} or later. Mattermost Server 9.4 or later also works.'
                     values={{
                         appName,
+                        minVersion: MIN_ANTIMATTER_VERSION,
                         link: (msg: React.ReactNode) => (
                             <a
                                 href='#'

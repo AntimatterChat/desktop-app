@@ -189,7 +189,7 @@
   "renderer.components.errorView.serverVersionIsIncompatible": "The {appName} Server you are accessing is incompatible with this version of the {appName} Desktop App. To connect to this server, please try the following:",
   "renderer.components.errorView.troubleshooting.clearCacheAndReload": "Try to <link>clear the cache and reload</link>. This may fix the issue.",
   "renderer.components.errorView.troubleshooting.ensureComputerIsConnected": "Ensure your computer is connected to your network.",
-  "renderer.components.errorView.troubleshooting.upgradeServer": "<link>Upgrade the server</link> to {appName}, or to Mattermost Server v9.4 or later.",
+  "renderer.components.errorView.troubleshooting.upgradeServer": "<link>Upgrade the server</link> to {appName} {minVersion} or later. Mattermost Server 9.4 or later also works.",
   "renderer.components.errorView.troubleshooting.urlIsCorrect.appNameIsCorrect": "Verify that the URL <link>{url}</link> is correct.",
   "renderer.components.errorView.troubleshooting.webContentsView.canReachFromBrowserWindow": "Try opening <link>{url}</link> in a browser window.",
   "renderer.components.errorView.tryTheseSteps": "Please try the following steps if this issue persists:",
